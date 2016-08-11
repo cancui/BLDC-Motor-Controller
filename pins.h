@@ -90,6 +90,8 @@ bool pin_isset(const Pin *pin)
 			return PORTC & _BV(pin->bit);
 		case PORT_D:
 			return PORTD & _BV(pin->bit);
+		default:
+			return false;
 	}
 }
 

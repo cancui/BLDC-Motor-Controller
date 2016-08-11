@@ -1,6 +1,6 @@
 echo "Building"
 
-DIRECTORY="../build"
+DIRECTORY="../build_sh"
 
 if [ ! -d "$DIRECTORY" ]; then
 	mkdir "$DIRECTORY"

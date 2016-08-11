@@ -1,6 +1,6 @@
 echo "Cleaning"
 
-DIRECTORY="../build"
+DIRECTORY="../build_sh"
 
 cd "$DIRECTORY"
 
