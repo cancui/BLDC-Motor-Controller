@@ -1,17 +1,12 @@
 #include "main.h"
+#include "pins.h"
+#include "led.h"
 
-static const short BLINK_DELAY_MS 1000
+#include <avr/io.h>
+#include <util/delay.h>
 
+static const short BLINK_DELAY_MS = 1000;
 
-
-int main()
-{
-
-
-	return 0;
-}
-
-/*
 int main() {
  	//set pin 5 of PORTB for output
  	DDRB |= _BV(DDB5);
@@ -25,5 +20,6 @@ int main() {
  		PORTB &= ~_BV(PORTB5);
  		_delay_ms(BLINK_DELAY_MS);
  	}
+
+ 	return 0;
 }
-*/

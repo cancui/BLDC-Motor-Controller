@@ -8,6 +8,6 @@ rm *.o
 rm *.e
 rm *.hex
 
-cd ..
+cd ../scripts
 
 echo "Done"
