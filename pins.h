@@ -1,6 +1,8 @@
 #ifndef PINS_H
 #define PINS_H
 
+#include <stdbool.h>
+
 #include <avr/io.h>
 //#include <avr/sfr_defs.h>
 
@@ -51,64 +53,28 @@ typedef struct {
 //define like this:
 //const Pin LED_GREEN = { .port = B, .bit = 5 };
 
-void pin_set(const Pin *pin)
-{
-	switch (pin->port) {
-		//case PORT_A:
-		//	PORTA |= _BV(pin->bit);
-		case PORT_B:
-			PORTB |= _BV(pin->bit);
-		case PORT_C:
-			PORTC |= _BV(pin->bit);
-		case PORT_D:
-			PORTD |= _BV(pin->bit);
-	}
-}
+void pin_set(const Pin *pin);
 
-void pin_clear(const Pin *pin)
-{
-	switch (pin->port) {
-		//case PORT_A:
-		//	PORTA &= ~_BV(pin->bit);
-		case PORT_B:
-			PORTB &= ~_BV(pin->bit);
-		case PORT_C:
-			PORTC &= ~_BV(pin->bit);
-		case PORT_D:
-			PORTD &= ~_BV(pin->bit);
-	}
-}
+void pin_clear(const Pin *pin);
 
-bool pin_isset(const Pin *pin)
-{
-	switch (pin->port) {
-		//case PORT_A:
-		//	return PORTA & _BV(pin->bit);
-		case PORT_B:
-			return PORTB & _BV(pin->bit);
-		case PORT_C:
-			return PORTC & _BV(pin->bit);
-		case PORT_D:
-			return PORTD & _BV(pin->bit);
-		default:
-			return false;
-	}
-}
+bool pin_isset(const Pin *pin);
 
-uint8_t pin_bitpos(const Pin *pin)
-{
-	return pin->bit;
-}
+uint8_t pin_bitpos(const Pin *pin);
 
-Port pin_port(const Pin *pin)
-{
-	return pin->port;
-}
+Port pin_port(const Pin *pin);
+
+extern const Pin LED_GREEN;
+extern const Pin LED_RED;
+extern const Pin LED_YELLOW;
+
+extern const Pin MOTOR_GATE_1;
+extern const Pin MOTOR_GATE_2;
+extern const Pin MOTOR_GATE_3;
+extern const Pin MOTOR_GATE_4;
+extern const Pin MOTOR_GATE_5;
+extern const Pin MOTOR_GATE_6;
 
 //called like this:
 //set_pin(&LED_GREEN);
-
-const Pin LED_GREEN = { .port = PORT_B, .bit = 5 };
-
 
 #endif

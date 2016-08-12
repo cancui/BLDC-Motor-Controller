@@ -9,6 +9,6 @@ void led_off(LED_type type);
 void all_leds_on();
 void all_leds_off();
 
-LED_status get_led_status(LED_type type);
+bool led_ison(LED_type type);
 
 #endif

@@ -20,9 +20,11 @@ typedef enum {
 	RED
 } LED_type;
 
+/*
 typedef enum {
 	LED_OFF = 0,
 	LED_ON = 1
 } LED_status;
+*/
 
 #endif
