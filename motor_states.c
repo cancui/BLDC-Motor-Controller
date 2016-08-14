@@ -3,70 +3,80 @@
 
 void motor_stop()
 {
-	pin_clear(&MOTOR_GATE_1);
-	pin_clear(&MOTOR_GATE_2);
-	pin_clear(&MOTOR_GATE_3);
-	pin_clear(&MOTOR_GATE_4);
-	pin_clear(&MOTOR_GATE_5);
-	pin_clear(&MOTOR_GATE_6);
+	CLR_MOTOR_GATE_1();
+	CLR_MOTOR_GATE_2();
+	CLR_MOTOR_GATE_3();
+	CLR_MOTOR_GATE_4();
+	CLR_MOTOR_GATE_5();
+	CLR_MOTOR_GATE_6();
+}
+
+void test_gates_on()
+{
+	SET_MOTOR_GATE_1();
+	SET_MOTOR_GATE_2();
+	SET_MOTOR_GATE_3();
+	SET_MOTOR_GATE_4();
+	SET_MOTOR_GATE_5();
+	SET_MOTOR_GATE_6();
 }
 
 void f1()
 {
-	pin_set(&MOTOR_GATE_1);
-	pin_clear(&MOTOR_GATE_2);
-	pin_clear(&MOTOR_GATE_3);
-	pin_clear(&MOTOR_GATE_4);
-	pin_set(&MOTOR_GATE_5);
-	pin_clear(&MOTOR_GATE_6);
+	SET_MOTOR_GATE_1();
+	CLR_MOTOR_GATE_2();
+	CLR_MOTOR_GATE_3();
+	CLR_MOTOR_GATE_4();
+	SET_MOTOR_GATE_5();
+	CLR_MOTOR_GATE_6();
 }
 
 void f2()
 {
-	pin_clear(&MOTOR_GATE_1);
-	pin_set(&MOTOR_GATE_2);
-	pin_clear(&MOTOR_GATE_3);
-	pin_clear(&MOTOR_GATE_4);
-	pin_clear(&MOTOR_GATE_5);
-	pin_set(&MOTOR_GATE_6);
+	CLR_MOTOR_GATE_1();
+	SET_MOTOR_GATE_2();
+	CLR_MOTOR_GATE_3();
+	CLR_MOTOR_GATE_4();
+	CLR_MOTOR_GATE_5();
+	SET_MOTOR_GATE_6();
 }
 
 void f3()
 {
-	pin_clear(&MOTOR_GATE_1);
-	pin_clear(&MOTOR_GATE_2);
-	pin_set(&MOTOR_GATE_3);
-	pin_set(&MOTOR_GATE_4);
-	pin_clear(&MOTOR_GATE_5);
-	pin_clear(&MOTOR_GATE_6);
+	CLR_MOTOR_GATE_1();
+	CLR_MOTOR_GATE_2();
+	SET_MOTOR_GATE_3();
+	SET_MOTOR_GATE_4();
+	CLR_MOTOR_GATE_5();
+	CLR_MOTOR_GATE_6();
 }
 
 void b1()
 {
-	pin_clear(&MOTOR_GATE_1);
-	pin_set(&MOTOR_GATE_2);
-	pin_clear(&MOTOR_GATE_3);
-	pin_set(&MOTOR_GATE_4);
-	pin_clear(&MOTOR_GATE_5);
-	pin_clear(&MOTOR_GATE_6);
+	CLR_MOTOR_GATE_1();
+	SET_MOTOR_GATE_2();
+	CLR_MOTOR_GATE_3();
+	SET_MOTOR_GATE_4();
+	CLR_MOTOR_GATE_5();
+	CLR_MOTOR_GATE_6();
 }
 
 void b2()
 {
-	pin_set(&MOTOR_GATE_1);
-	pin_clear(&MOTOR_GATE_2);
-	pin_clear(&MOTOR_GATE_3);
-	pin_clear(&MOTOR_GATE_4);
-	pin_clear(&MOTOR_GATE_5);
-	pin_set(&MOTOR_GATE_6);
+	SET_MOTOR_GATE_1();
+	CLR_MOTOR_GATE_2();
+	CLR_MOTOR_GATE_3();
+	CLR_MOTOR_GATE_4();
+	CLR_MOTOR_GATE_5();
+	SET_MOTOR_GATE_6();
 }
 
 void b3()
 {
-	pin_clear(&MOTOR_GATE_1);
-	pin_clear(&MOTOR_GATE_2);
-	pin_set(&MOTOR_GATE_3);
-	pin_clear(&MOTOR_GATE_4);
-	pin_set(&MOTOR_GATE_5);
-	pin_clear(&MOTOR_GATE_6);
+	CLR_MOTOR_GATE_1();
+	CLR_MOTOR_GATE_2();
+	SET_MOTOR_GATE_3();
+	CLR_MOTOR_GATE_4();
+	SET_MOTOR_GATE_5();
+	CLR_MOTOR_GATE_6();
 }

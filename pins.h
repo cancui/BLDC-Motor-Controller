@@ -2,22 +2,14 @@
 #define PINS_H
 
 #include <stdbool.h>
-
 #include <avr/io.h>
-//#include <avr/sfr_defs.h>
 
-/* METHOD 1
-#define def #define
-#define NL
-#define ASSIGN_PIN(name, reg, bit) \
-	def SET_##name (PORT##reg |= _(bit)) NL \
-	def CLR_##name (PORT##reg &= ~_BV(bit)) NL \
-	def ISSET_##name (PIN##reg & _BV(bit)) NL \
-	def BIT_##name _BV(bit) NL \
-	def BITPOS_##name bit
-*/
+#define ASSIGN_PIN_H(name, reg, bit)	\
+	void SET_##name();					\
+	void CLR_##name();					\
+	bool ISSET_##name();				\
+	uint8_t BITPOS_##name();
 
-/* METHOD 2
 #define ASSIGN_PIN(name, reg, bit)		\
 	void SET_##name() {					\
 		PORT##reg |= _BV(bit);			\
@@ -30,51 +22,17 @@
 	}									\
 	uint8_t BITPOS_##name() {			\
 		return bit;						\
-	}									
-	//def BITPOS_##name bit 				
+	}													
 
-ASSIGN_PIN(LED_GREEN, B, 5)
-ASSIGN_PIN(LED_GREEN, B, 4)
-ASSIGN_PIN(LED_GREEN, B, 0)
-*/
+ASSIGN_PIN_H(LED_GREEN, B, 5)
+ASSIGN_PIN_H(LED_RED, B, 4)
+ASSIGN_PIN_H(LED_YELLOW, B, 0)
 
-typedef enum {
-	//PORT_A,
-	PORT_B,
-	PORT_C,
-	PORT_D
-} Port;
-
-typedef struct {
-	Port port;
-	uint8_t bit;
-} Pin;
-
-//define like this:
-//const Pin LED_GREEN = { .port = B, .bit = 5 };
-
-void pin_set(const Pin *pin);
-
-void pin_clear(const Pin *pin);
-
-bool pin_isset(const Pin *pin);
-
-uint8_t pin_bitpos(const Pin *pin);
-
-Port pin_port(const Pin *pin);
-
-extern const Pin LED_GREEN;
-extern const Pin LED_RED;
-extern const Pin LED_YELLOW;
-
-extern const Pin MOTOR_GATE_1;
-extern const Pin MOTOR_GATE_2;
-extern const Pin MOTOR_GATE_3;
-extern const Pin MOTOR_GATE_4;
-extern const Pin MOTOR_GATE_5;
-extern const Pin MOTOR_GATE_6;
-
-//called like this:
-//set_pin(&LED_GREEN);
+ASSIGN_PIN_H(MOTOR_GATE_1, D, 7)
+ASSIGN_PIN_H(MOTOR_GATE_2, D, 6)
+ASSIGN_PIN_H(MOTOR_GATE_3, D, 5)
+ASSIGN_PIN_H(MOTOR_GATE_4, D, 4)
+ASSIGN_PIN_H(MOTOR_GATE_5, D, 3)
+ASSIGN_PIN_H(MOTOR_GATE_6, D, 2)
 
 #endif

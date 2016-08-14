@@ -11,50 +11,38 @@ static const short BLINK_DELAY_MS = 300;
 
 void initialize() 
 {
-	//set bits 0, 4, and 5 on PORTB as output
-	DDRB |= 0x01 | 0x10 | 0x20; //_BV(DDB5) | ... ;
-	DDRD |= 0xFC;
+	DDRB |= 0x01 | 0x10 | 0x20; //set bits 0, 4, and 5 on PORTB as output
+	DDRD |= 0xFC;				//set bits 7-2 on PORTD as output
+
+
+
+	motor_stop(); //shuts off all motor gates
 }
 
 int main() {
 
 	initialize();
-	
+
 	while(1){
 		/*
-		all_leds_on();
+		all_leds_on();		
 		_delay_ms(BLINK_DELAY_MS);
 		all_leds_off();
-		_delay_ms(BLINK_DELAY_MS);	*/
-
-		b1();
 		_delay_ms(BLINK_DELAY_MS);
-		b2();
+		*/
+		//delay_and_flash_100ms(3);
+		
+		f1();
 		_delay_ms(BLINK_DELAY_MS);
-		b3();		
+		//delay_and_flash_100ms(3);
+		f2();
 		_delay_ms(BLINK_DELAY_MS);
+		//delay_and_flash_100ms(3);
+		f3();		
+		_delay_ms(BLINK_DELAY_MS);
+		//delay_and_flash_100ms(3);
+		
 	}
+
 	return 0;
 }
-
-
-
-/*
-
-int main() {
- 	//set pin 5 of PORTB for output
- 	DDRB |= _BV(DDB5);
- 
- 	while(1) {
- 		//set pin 5 high to turn led on 
- 		PORTB |= _BV(PORTB5);
- 		_delay_ms(BLINK_DELAY_MS);
- 
- 		//set pin 5 low to turn led off 
- 		PORTB &= ~_BV(PORTB5);
- 		_delay_ms(BLINK_DELAY_MS);
- 	}
-
- 	return 0;
-}
-*/

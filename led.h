@@ -3,12 +3,9 @@
 
 #include "main.h"
 
-void led_on(LED_type type); 
-void led_off(LED_type type);
-
 void all_leds_on();
 void all_leds_off();
 
-bool led_ison(LED_type type);
+void delay_and_flash_100ms(uint8_t ms_100);
 
 #endif

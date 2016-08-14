@@ -2,52 +2,40 @@
 #include "led.h"
 #include "pins.h"
 
-void led_on(LED_type type)
-{
-	switch(type) {
-		case GREEN:
-			pin_set(&LED_GREEN);
-		case YELLOW:
-			pin_set(&LED_YELLOW);
-		case RED:
-			pin_set(&LED_RED);
-	}
-}
-
-void led_off(LED_type type)
-{
-	switch(type) {
-		case GREEN:
-			pin_clear(&LED_GREEN);
-		case YELLOW:
-			pin_clear(&LED_YELLOW);
-		case RED:
-			pin_clear(&LED_RED);
-	}
-}
-
 void all_leds_on()
 {
-	pin_set(&LED_GREEN);
-	pin_set(&LED_YELLOW);
-	pin_set(&LED_RED);
+	SET_LED_GREEN();
+	SET_LED_RED();
+	SET_LED_YELLOW();
 }
 
 void all_leds_off()
 {
-	pin_clear(&LED_GREEN);
-	pin_clear(&LED_YELLOW);
-	pin_clear(&LED_RED);
+	CLR_LED_GREEN();
+	CLR_LED_RED();
+	CLR_LED_YELLOW();
 }
 
-bool led_ison(LED_type type)
+void delay_and_flash_100ms(uint8_t ms_100)
 {
-	switch(type) {
-		case GREEN:
-			return pin_isset(&LED_GREEN);
-		case YELLOW:
-			return pin_isset(&LED_YELLOW);
-		case RED:
-			return pin_isset(&LED_RED);
+	bool green_status = ISSET_LED_GREEN();
+	bool red_status = ISSET_LED_RED();
+	bool yellow_status = ISSET_LED_YELLOW();
+
+	while(ms_100--) {
+		all_leds_on();
+		_delay_ms(50);
+		all_leds_off();
+		_delay_ms(50);
+	}
+	
+	if(green_status) {
+		SET_LED_GREEN();
+	} 
+	if(red_status) {
+		SET_LED_RED();
+	}
+	if(yellow_status) {
+		SET_LED_YELLOW();
 	}
 }

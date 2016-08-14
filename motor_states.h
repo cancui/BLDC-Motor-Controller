@@ -2,6 +2,7 @@
 #define MOTOR_STATES_H
 
 void motor_stop();
+void test_gates_on();
 
 void f1();
 void f2();
