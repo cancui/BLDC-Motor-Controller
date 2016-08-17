@@ -1,6 +1,8 @@
 #include "motor_states.h"
 #include "pins.h"
 
+#include <util/delay.h>
+
 void motor_stop()
 {
 	CLR_MOTOR_GATE_1();
@@ -19,6 +21,18 @@ void test_gates_on()
 	SET_MOTOR_GATE_4();
 	SET_MOTOR_GATE_5();
 	SET_MOTOR_GATE_6();
+}
+
+void flash_motor_gates()
+{
+	test_gates_on();
+	_delay_ms(100);
+	motor_stop();
+	_delay_ms(100);
+	test_gates_on();
+	_delay_ms(100);
+	motor_stop();
+	_delay_ms(100);
 }
 
 void f1()

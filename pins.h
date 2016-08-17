@@ -18,11 +18,14 @@
 		PORT##reg &= ~_BV(bit);			\
 	}									\
 	bool ISSET_##name() {				\
-		return PORT##reg & _BV(bit);	\
+		return PIN##reg & _BV(bit);		\
 	}									\
 	uint8_t BITPOS_##name() {			\
 		return bit;						\
 	}													
+
+#define ASSIGN_PIN_IN(name, reg, bit)	\
+
 
 ASSIGN_PIN_H(LED_GREEN, B, 5)
 ASSIGN_PIN_H(LED_RED, B, 4)

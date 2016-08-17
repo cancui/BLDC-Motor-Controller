@@ -4,6 +4,8 @@
 void motor_stop();
 void test_gates_on();
 
+void flash_motor_gates();
+
 void f1();
 void f2();
 void f3();
