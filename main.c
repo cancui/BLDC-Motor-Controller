@@ -155,14 +155,21 @@ void initialize()
 
 	PCICR |= (1 << PCIE1); //enable interrupts for PORC (analog pins on Arduino)
 	PCMSK1 = (1 << PCINT13)|(1 << PCINT12)|(1 << PCINT11); //enable on A3-A5 specifically (PORTC bits 3-5)
-	
-	sei();			//global enable interrupts
+
+	//LED timer
+	TCCR0A |= (1 << WGM01); // Configure timer 0 for CTC mode
+	OCR0A = 255; // delay of ~114 ms after the counter in the ISR
+	TIMSK0 |= (1 << OCIE0A);  //Enable CTC interrupt (TIMER0_COMPA_vect)
+	TCCR0B |= ((1 << CS02) | (1 << CS00)); // Start timer 0 at Fcpu/1024
+	//The value of this timer is stored in TCNT0
 
 	motor_off = true;
 	motor_forwards = true;
 	expected_motor_state = 1;
 
 	motor_stop(); //shuts off all motor gates
+
+	sei();			//global enable interrupts
 }
 
 int main() {
@@ -172,10 +179,10 @@ int main() {
 	motor_off = false;
 	motor_forwards = false;
 
-	set_flash_green();
-	set_flash_red();
-	set_flash_yellow();
-	
+	//set_flash_green();
+	//set_flash_red();
+	//set_flash_yellow();
+
 	while(1){
 		//TOG_LED_YELLOW();
 		_delay_ms(BLINK_DELAY_MS);

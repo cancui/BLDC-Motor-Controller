@@ -3,7 +3,7 @@
 
 #include <util/delay.h>
 
-extern bool motor_state_change_flag = false;
+extern volatile bool motor_state_change_flag = false;
 
 void motor_stop()
 {
