@@ -11,131 +11,6 @@
 static const uint8_t 	BLINK_DELAY_MS = 15;
 static const uint8_t	MAX_TIME_IN_STATE_MS = 10;
 
-volatile bool		motor_off;
-volatile bool 		motor_forwards;
-volatile uint8_t	expected_motor_state;
-
-//TODO: remove all delays from ISR
-ISR (PCINT1_vect) 
-{
-	//TODO: check if this is the correct way to do it
-	uint8_t PINC_state = PINC;
-
-	//check if motor_off or triggered by high->low
-	//TODO: check if there's a more efficient way to do this
-
-	if(motor_off || (!(PINC_state & 0x08) && !(PINC_state & 0x10) && !(PINC_state & 0x20)) ) { 
-
-		//motor_stop();
-
-		TOG_LED_GREEN();
-		//toggle_led_green();
-		//_delay_ms(100);
-
-		PCIFR |= (1 << PCIF1); //clear the flag for this interrupt
-
-		//TODO: consider else instead of return
-		return;
-	}
-
-	//toggle_led_red();
-	//_delay_ms(100);
-
-	if(motor_forwards) {
-		//if f1, check A5 (bit 5)
-		if(expected_motor_state == 1 && PINC_state & _BV(5)) {
-
-			f1();
-			expected_motor_state = 2;
-		} else
-
-		//if f2, check A3 (bit 3)
-		if(expected_motor_state == 2 && PINC_state & _BV(3)) {
-
-			f2();
-			expected_motor_state = 3;
-		} else
-
-		//if f3, check A4 (bit 4)
-		if(expected_motor_state == 3 && PINC_state & _BV(4)) {
-
-			f3();
-			expected_motor_state = 1;
-		}
-	} else {
-		//if b1, check A5 (bit 5)
-		if(expected_motor_state == 1 && PINC_state & _BV(5)) {
-
-			b1();
-			expected_motor_state = 2;
-		} else
-
-		//if b2, check A4 (bit 4)
-		if(expected_motor_state == 2 && PINC_state & _BV(4)) {
-
-			b2();
-			expected_motor_state = 3;
-		} else
-
-		//if b3, check A3 (bit 3)
-		if(expected_motor_state == 3 && PINC_state & _BV(3)) {
-
-			b3();
-			expected_motor_state = 1;
-		}
-	}
-
-	PCIFR |= (1 << PCIF1); //clear the flag for this interrupt
-
-	/*
-	static volatile bool teston = true;
-	static volatile bool teston2 = true;
-	if(teston) {
-		SET_LED_RED();
-		teston = false;
-	}
-	else {
-		CLR_LED_RED();
-		teston = true;
-	}
-	return;
-	if(teston2) {
-		SET_LED_GREEN();
-		teston2 = false;
-	}
-	else {
-		CLR_LED_GREEN();
-		teston2 = true;
-	}*/
-	
-	/*
-	static volatile bool green_on = false;
-
-	if(!(PINC & 0x10)) {
-		if(green_on == true) {
-			SET_LED_GREEN();
-			SET_LED_RED();
-			green_on = false;
-		} else {
-			CLR_LED_GREEN();
-			CLR_LED_RED();
-			green_on = true;
-		}
-	}
-	f1();
-	_delay_ms(BLINK_DELAY_MS);
-	f2();
-	_delay_ms(BLINK_DELAY_MS);
-	f3();		
-	_delay_ms(BLINK_DELAY_MS);
-	motor_stop();
-	_delay_ms(BLINK_DELAY_MS);
-
-	PCIFR |= (1 << PCIF1); //clear the flag for this interrupt
-	*/
-}  
-
-//TODO: Use internal clock, function like systick (to limit time in one motor state)
 //TODO: Make some functions inline (line motor states, or pin accessors)
 //TODO: implement temperature sensing on MOSFETs
 //TODO: SPI communications
@@ -163,6 +38,13 @@ void initialize()
 	TCCR0B |= ((1 << CS02) | (1 << CS00)); // Start timer 0 at Fcpu/1024
 	//The value of this timer is stored in TCNT0
 
+	//TODO: complete motor state timer implementation
+	//Motor state timer
+	TCCR1B |= (1 << WGM12); // Configure timer 1 for CTC mode
+	OCR1A   = 1562; // Set CTC compare value to 10Hz at 16MHz AVR clock, with a prescaler of 1024
+	TIMSK1 |= (1 << OCIE1A); // Enable CTC interrupt
+	TCCR1B |= ((1 << CS10) | (1 << CS12)); // Start timer at Fcpu/1024
+
 	motor_off = true;
 	motor_forwards = true;
 	expected_motor_state = 1;
@@ -181,7 +63,7 @@ int main() {
 
 	//set_flash_green();
 	//set_flash_red();
-	//set_flash_yellow();
+	set_flash_yellow();
 
 	while(1){
 		//TOG_LED_YELLOW();

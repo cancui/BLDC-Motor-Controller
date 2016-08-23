@@ -35,6 +35,21 @@ void set_flash_yellow()
 	flash_yellow = true;
 }
 
+void clear_flash_green()
+{
+	flash_green = false;
+}
+
+void clear_flash_red()
+{
+	flash_red = false;
+}
+
+void clear_flash_yellow()
+{
+	flash_yellow = false;
+}
+
 void delay_and_flash_100ms(uint8_t ms_100)
 {
 	bool green_status = ISSET_LED_GREEN();

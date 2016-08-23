@@ -6,7 +6,7 @@ PROG   = avrdude
 DUMP   = avr-objdump 
 
 MCU    = atmega328p
-CFLAGS = -mmcu=$(MCU) -std=c11 -Wall -Wextra 
+CFLAGS = -mmcu=$(MCU) -std=c11 -Wall -Wextra -finline-functions
 #CFLAGS = -mmcu=$(MCU) -std=c11 -Wall -Wextra -O2 -fsigned-char -fno-strict-aliasing -g
 #LFLAGS = -Wl,-Map=$(BUILDDIR)/main.map
 

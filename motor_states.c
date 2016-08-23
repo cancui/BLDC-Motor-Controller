@@ -1,5 +1,6 @@
 #include "motor_states.h"
 #include "pins.h"
+#include "main.h"
 
 #include <util/delay.h>
 
@@ -23,6 +24,7 @@ void test_gates_on()
 	SET_MOTOR_GATE_4();
 	SET_MOTOR_GATE_5();
 	SET_MOTOR_GATE_6();
+	TCNT1 = 0;
 	motor_state_change_flag = true;
 }
 
@@ -46,6 +48,7 @@ void f1()
 	CLR_MOTOR_GATE_4();
 	SET_MOTOR_GATE_5();
 	CLR_MOTOR_GATE_6();
+	TCNT1 = 0;
 	motor_state_change_flag = true;
 }
 
@@ -57,6 +60,7 @@ void f2()
 	CLR_MOTOR_GATE_4();
 	CLR_MOTOR_GATE_5();
 	SET_MOTOR_GATE_6();
+	TCNT1 = 0;
 	motor_state_change_flag = true;
 }
 
@@ -68,6 +72,7 @@ void f3()
 	SET_MOTOR_GATE_4();
 	CLR_MOTOR_GATE_5();
 	CLR_MOTOR_GATE_6();
+	TCNT1 = 0;
 	motor_state_change_flag = true;
 }
 
@@ -79,6 +84,7 @@ void b1()
 	SET_MOTOR_GATE_4();
 	CLR_MOTOR_GATE_5();
 	CLR_MOTOR_GATE_6();
+	TCNT1 = 0;
 	motor_state_change_flag = true;
 }
 
@@ -90,6 +96,7 @@ void b2()
 	CLR_MOTOR_GATE_4();
 	CLR_MOTOR_GATE_5();
 	SET_MOTOR_GATE_6();
+	TCNT1 = 0;
 	motor_state_change_flag = true;
 }
 
@@ -101,5 +108,6 @@ void b3()
 	CLR_MOTOR_GATE_4();
 	SET_MOTOR_GATE_5();
 	CLR_MOTOR_GATE_6();
+	TCNT1 = 0;
 	motor_state_change_flag = true;
 }
