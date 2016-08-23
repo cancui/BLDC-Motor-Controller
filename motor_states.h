@@ -1,6 +1,10 @@
 #ifndef MOTOR_STATES_H
 #define MOTOR_STATES_H
 
+#include <stdbool.h>
+
+extern bool motor_state_change_flag;
+
 void motor_stop();
 void test_gates_on();
 

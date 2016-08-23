@@ -9,9 +9,4 @@
 #include <avr/interrupt.h>
 #include <avr/eeprom.h>
 
-typedef enum {
-	STATUS_OK = 0,
-
-} Status;
-
 #endif

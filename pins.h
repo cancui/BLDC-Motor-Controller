@@ -7,6 +7,7 @@
 #define ASSIGN_PIN_H(name, reg, bit)	\
 	void SET_##name();					\
 	void CLR_##name();					\
+	void TOG_##name();					\
 	bool ISSET_##name();				\
 	uint8_t BITPOS_##name();
 
@@ -16,6 +17,9 @@
 	}									\
 	void CLR_##name() {					\
 		PORT##reg &= ~_BV(bit);			\
+	}									\
+	void TOG_##name() {					\
+		PORT##reg ^= _BV(bit);			\
 	}									\
 	bool ISSET_##name() {				\
 		return PIN##reg & _BV(bit);		\
