@@ -8,8 +8,8 @@ void cycle_b(unsigned us100);
 
 void simple1();
 
-extern volatile bool motor_off;
-extern volatile bool motor_forwards;
-extern volatile uint8_t expected_motor_state;
+volatile bool motor_off; //had extern
+volatile bool motor_forwards; //had extern
+volatile uint8_t expected_motor_state; //had extern
 
 #endif

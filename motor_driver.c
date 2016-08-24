@@ -39,15 +39,17 @@ void simple1()
 	}
 }
 
-extern volatile bool motor_off = true;
-extern volatile bool motor_forwards = true;
-extern volatile uint8_t expected_motor_state = 1;
+volatile bool motor_off = true;//had extern
+volatile bool motor_forwards = true; //had extern
+volatile uint8_t expected_motor_state = 1;//had extern
 
+/*
 ISR(TIMER1_COMPA_vect)
 {
 	motor_stop();
 	set_flash_red();
 }
+*/
 
 //TODO: remove all delays from ISR
 ISR (PCINT1_vect) 
@@ -77,42 +79,42 @@ ISR (PCINT1_vect)
 
 	if(motor_forwards) {
 		//if f1, check A5 (bit 5)
-		if(expected_motor_state == 1 && PINC_state & _BV(5)) {
+		if(expected_motor_state == 1 && PINC_state & _BV(4)) {
 
 			f1();
 			expected_motor_state = 2;
 		} else
 
 		//if f2, check A3 (bit 3)
-		if(expected_motor_state == 2 && PINC_state & _BV(3)) {
+		if(expected_motor_state == 2 && PINC_state & _BV(5)) {
 
 			f2();
 			expected_motor_state = 3;
 		} else
 
 		//if f3, check A4 (bit 4)
-		if(expected_motor_state == 3 && PINC_state & _BV(4)) {
+		if(expected_motor_state == 3 && PINC_state & _BV(3)) {
 
 			f3();
 			expected_motor_state = 1;
 		}
 	} else {
 		//if b1, check A5 (bit 5)
-		if(expected_motor_state == 1 && PINC_state & _BV(5)) {
+		if(expected_motor_state == 1 && PINC_state & _BV(3)) {
 
 			b1();
 			expected_motor_state = 2;
 		} else
 
 		//if b2, check A4 (bit 4)
-		if(expected_motor_state == 2 && PINC_state & _BV(4)) {
+		if(expected_motor_state == 2 && PINC_state & _BV(5)) {
 
 			b2();
 			expected_motor_state = 3;
 		} else
 
 		//if b3, check A3 (bit 3)
-		if(expected_motor_state == 3 && PINC_state & _BV(3)) {
+		if(expected_motor_state == 3 && PINC_state & _BV(4)) {
 
 			b3();
 			expected_motor_state = 1;

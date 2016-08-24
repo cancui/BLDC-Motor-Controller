@@ -4,7 +4,7 @@
 
 #include <util/delay.h>
 
-extern volatile bool motor_state_change_flag = false;
+volatile bool motor_state_change_flag = false; //had extern
 
 void motor_stop()
 {

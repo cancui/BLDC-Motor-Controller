@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-extern volatile bool motor_state_change_flag;
+volatile bool motor_state_change_flag; //had extern
 
 void motor_stop();
 void test_gates_on();
