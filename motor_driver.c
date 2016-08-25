@@ -39,17 +39,52 @@ void simple1()
 	}
 }
 
+void startup_f1()
+{
+	//disable EMF interrupt
+	PCICR &= ~(1 << PCIE1); 
+
+	//disable timer interrupt
+	TIMSK1 &= ~(1 << OCIE1A); 
+
+	motor_off = false;
+
+	//Startup routine
+	for(uint8_t i = 0; i < 3; i++){
+		break;
+	}
+	for(uint8_t i = 0; i < 3; i++){
+		break;
+	}
+	for(uint8_t i = 0; i < 3; i++){
+		break;
+	}
+	for(uint8_t i = 0; i < 3; i++){
+		break;
+	}
+
+	// Enable CTC interrupt
+	TIMSK1 |= (1 << OCIE1A); 
+	TCNT1 = 0; 
+
+	//enable EMF interrupt
+	PCICR |= (1 << PCIE1); //enable interrupts for PORTC (analog pins on Arduino)
+}
+
 volatile bool motor_off = true;//had extern
 volatile bool motor_forwards = true; //had extern
 volatile uint8_t expected_motor_state = 1;//had extern
 
-/*
+
 ISR(TIMER1_COMPA_vect)
 {
 	motor_stop();
-	set_flash_red();
+	if(motor_off) {
+		set_flash_red();
+		set_flash_green();
+	}
 }
-*/
+
 
 //TODO: remove all delays from ISR
 ISR (PCINT1_vect) 

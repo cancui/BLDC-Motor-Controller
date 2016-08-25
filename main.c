@@ -12,9 +12,9 @@
 static const uint8_t 	BLINK_DELAY_MS = 15;
 static const uint8_t	MAX_TIME_IN_STATE_MS = 10;
 
-//TODO: switch gate 5 and 6 to port B, freeing the INT0 and INT1 pins
+//TODO: in all non-timer interrupts, clear its own flag at end of ISR
+//TODO: check if CTC mode will clear at first compare and never reach second
 //TODO: Make some functions inline (line motor states, or pin accessors)
-//TODO: implement temperature sensing on MOSFETs
 //TODO: communications
 void initialize() 
 {
@@ -27,7 +27,7 @@ void initialize()
 	//PORTC |= 0X3F;	//enable pull-up resistors for bits 0-5
 
 	DDRD = 0xFC;	//set bits 2-7 on PORTD as output, clear 0,1 
-	PORTD |= ~0xFC;	//enable pull-up resistors at pins 0,1
+	PORTD |= 0x0F;	//enable pull-up resistors at pins 0,1,2,3
 	PORTD &= ~0xFC;	//clear bits 2,7
 
 	//Set up ADC
@@ -37,6 +37,10 @@ void initialize()
 	ADMUX |= (1 << ADLAR); //Reduces precision from 10 to 8 bits from faster reading (only read from ADCH
 	ADCSRA |= (1 << ADEN); //Enable ADC
 	ADCSRA |= (1 << ADSC); //ADC start conversion
+
+	//Set up INT1 for thermal warnings (PD3)
+	EICRA &= ~((1 << ISC11)|(1 << ISC10)); //redundant line
+	EIMSK |= (1 << INT1);
 
 	PCICR |= (1 << PCIE1); //enable interrupts for PORTC (analog pins on Arduino)
 	PCMSK1 = (1 << PCINT13)|(1 << PCINT12)|(1 << PCINT11); //enable on A3-A5 specifically (PORTC bits 3-5)
@@ -50,14 +54,12 @@ void initialize()
 	TCCR0B |= ((1 << CS02) | (1 << CS00)); // Start timer 0 at Fcpu/1024
 	//The value of this timer is stored in TCNT0
 
-	/*
 	//TODO: complete motor state timer implementation
 	//Motor state timer
 	TCCR1B |= (1 << WGM12); // Configure timer 1 for CTC mode
-	OCR1A   = 1562; // Set CTC compare value to 10Hz at 16MHz AVR clock, with a prescaler of 1024
+	OCR1A   = 31; // Set CTC compare value to 500Hz at 16MHz AVR clock, with a prescaler of 1024
 	TIMSK1 |= (1 << OCIE1A); // Enable CTC interrupt
 	TCCR1B |= ((1 << CS10) | (1 << CS12)); // Start timer at Fcpu/1024
-	*/
 
 	motor_off = true;
 	motor_forwards = true;
@@ -72,11 +74,11 @@ int main() {
 
 	initialize();
 
-	motor_off = false;
+	//motor_off = false;
 
 	//set_flash_green();
 	//set_flash_red();
-	set_flash_yellow();
+	//set_flash_yellow();
 
 	f1();
 

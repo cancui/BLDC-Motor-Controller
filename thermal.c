@@ -1,6 +1,8 @@
 #include "thermal.h"
 #include "led.h"
 #include "pins.h"
+#include "motor_driver.h"
+#include "motor_states.h"
 
 //TODO: recalculate 8-bit versions of these
 const uint8_t operational_adc_reading 	= 128; // at ~60C
@@ -52,10 +54,18 @@ ISR(TIMER0_COMPB_vect)
 				hottest_reading = 255;
 		}
 		
-		
-		
 		thermal_count = 0;
 	}
 	thermal_count++;
 }
 
+ISR(INT1_vect)
+{
+	motor_stop();
+	motor_off = true;
+
+	set_flash_red();
+	set_flash_yellow();
+
+	EIFR |= (1 << INTF1);
+}
