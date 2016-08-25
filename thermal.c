@@ -11,10 +11,15 @@ ISR(TIMER0_COMPB_vect)
 {
 	static uint8_t thermal_count = 1;
 	static uint8_t adc_to_sample = 0;
+	static uint8_t hottest_reading = 255;
 
 	if(thermal_count >= 7) {
 
 		uint8_t reading = ADCH;
+
+		if(reading < hottest_reading) {
+			hottest_reading = reading;
+		}
 
 		switch(adc_to_sample) {
 			case 0:
@@ -28,24 +33,29 @@ ISR(TIMER0_COMPB_vect)
 			case 2:
 				adc_to_sample = 0;
 				ADMUX &= ~0x0F; //switches ADC multiplexer to ADC0
+
+				if(hottest_reading < critical_adc_reading) {
+					set_flash_red();
+				} else if(hottest_reading < high_adc_reading) {
+					clear_flash_red();
+					SET_LED_RED();
+				} else if(hottest_reading < operational_adc_reading) {
+					clear_flash_red();
+					CLR_LED_RED();
+					SET_LED_YELLOW();
+				} else {
+					clear_flash_red();
+					CLR_LED_RED();
+					CLR_LED_YELLOW();
+				}
+
+				hottest_reading = 255;
 		}
 		
-		if(reading < critical_adc_reading) {
-			set_flash_red();
-		} else if(reading < high_adc_reading) {
-			clear_flash_red();
-			SET_LED_RED();
-		} else if(reading < operational_adc_reading) {
-			clear_flash_red();
-			CLR_LED_RED();
-			SET_LED_YELLOW();
-		} else {
-			clear_flash_red();
-			CLR_LED_RED();
-			CLR_LED_YELLOW();
-		}
+		
 		
 		thermal_count = 0;
 	}
 	thermal_count++;
 }
+
