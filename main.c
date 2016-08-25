@@ -1,4 +1,4 @@
-#include "main.h"
+//#include "main.h"
 #include "pins.h"
 #include "led.h"
 #include "thermal.h"
@@ -12,10 +12,11 @@
 static const uint8_t 	BLINK_DELAY_MS = 15;
 static const uint8_t	MAX_TIME_IN_STATE_MS = 10;
 
-//TODO: in all non-timer interrupts, clear its own flag at end of ISR
+//TODO: remove need for main.h
 //TODO: check if CTC mode will clear at first compare and never reach second
 //TODO: Make some functions inline (line motor states, or pin accessors)
 //TODO: communications
+//TODO: EEPROM logging system
 void initialize() 
 {
 	DDRB = 0x31; 	//set bits 0, 4, and 5 on PORTB as output, clear all others

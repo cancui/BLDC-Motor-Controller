@@ -1,6 +1,7 @@
 #ifndef PINS_H
 #define PINS_H
 
+#include <stdint.h>
 #include <stdbool.h>
 #include <avr/io.h>
 

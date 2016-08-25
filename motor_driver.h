@@ -1,7 +1,9 @@
 #ifndef MOTOR_DRIVER_H
 #define MOTOR_DRIVER_H
 
-#include "main.h"
+//#include "main.h"
+#include <stdint.h>
+#include <stdbool.h>
 
 void cycle_f(unsigned us100);
 void cycle_b(unsigned us100);

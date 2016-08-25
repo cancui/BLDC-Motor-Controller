@@ -4,6 +4,8 @@
 #include "motor_driver.h"
 #include "motor_states.h"
 
+#include <avr/interrupt.h>
+
 //TODO: recalculate 8-bit versions of these
 const uint8_t operational_adc_reading 	= 128; // at ~60C
 const uint8_t high_adc_reading 			= 52; // at ~110C

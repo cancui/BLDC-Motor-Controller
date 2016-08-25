@@ -1,7 +1,7 @@
 #ifndef LED_H
 #define LED_H
 
-#include "main.h"
+#include <stdint.h>
 
 void all_leds_on();
 void all_leds_off();

@@ -1,6 +1,9 @@
-#include "main.h"
+//#include "main.h"
 #include "led.h"
 #include "pins.h"
+
+#include <avr/interrupt.h>
+#include <util/delay.h>
 
 void all_leds_on()
 {

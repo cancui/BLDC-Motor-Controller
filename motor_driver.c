@@ -3,7 +3,11 @@
 #include "pins.h"
 #include "led.h"
 
+//#include <stdbool.h>
+//#include <stdint.h>
 #include <util/delay.h>
+//#include <avr/io.h>
+#include <avr/interrupt.h>
 
 void delay_100us(unsigned us) 
 {

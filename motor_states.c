@@ -1,6 +1,6 @@
 #include "motor_states.h"
 #include "pins.h"
-#include "main.h"
+//#include "main.h"
 
 #include <util/delay.h>
 
