@@ -13,7 +13,7 @@ ISR(TIMER0_COMPB_vect)
 	static uint8_t adc_to_sample = 0;
 	static uint8_t hottest_reading = 255;
 
-	if(thermal_count >= 7) {
+	if(thermal_count >= 4) {
 
 		uint8_t reading = ADCH;
 
