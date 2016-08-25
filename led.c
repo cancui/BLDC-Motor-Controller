@@ -80,7 +80,7 @@ void delay_and_flash_100ms(uint8_t ms_100)
 ISR(TIMER0_COMPA_vect)
 {
 	static uint8_t led_count = 1;
-	if(led_count >= 7) {
+	if(led_count >= 6) {
 		if(flash_green) {
 			TOG_LED_GREEN();
 		}

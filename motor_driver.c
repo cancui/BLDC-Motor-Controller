@@ -51,6 +51,11 @@ void startup_f1()
 	//disable timer interrupt
 	TIMSK1 &= ~(1 << OCIE1A); 
 
+	//CLR_LED_RED();
+	//CLR_LED_YELLOW();
+	//clear_flash_red();
+	//clear_flash_yellow();
+
 	motor_off = false;
 
 	//Startup routine
