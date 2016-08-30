@@ -13,54 +13,54 @@ static const uint8_t 	BLINK_DELAY_MS = 15;
 static const uint8_t	MAX_TIME_IN_STATE_MS = 10;
 
 //TODO: Can another interrupt of a different ISR be queued during first interrupt? If no, allow nested interrupts
-//TODO: check if CTC mode will clear at first compare and never reach second
-//TODO: Make some functions inline (line motor states, or pin accessors)
-//TODO: communications
-//TODO: EEPROM logging system
+//TODO: communications (no speed control, but forwards and backwards control)
+//TODO: EEPROM settings and logging system
+//TODO: Serial
 void initialize() 
 {
+	//Set up PORTB
 	DDRB = 0x3D; 	//set bits 0, 2,3,4, and 5 on PORTB as output, clear all others
 	PORTB |= ~0x3D;	//enable pull-up resisors for pins 1, 6-7
 	PORTB &= ~0x3D;	//clears bits 0,2,3,4,5
 
+	//Set up PORTC
 	DDRC &= ~0x3F; 	//set bits 0-5 on PORTC as input
 	PORTC &= ~0x38; //disable pull-up resistors for bits 3-5
 	PORTC |= 0x07;	//enable pull-up resistors for bits 0-2
 
+	//Set up PORTD
 	DDRD = 0xFC;	//set bits 2-7 on PORTD as output, clear 0,1 
 	PORTD |= 0x0F;	//enable pull-up resistors at pins 0,1,2,3
 	PORTD &= ~0xF0;	//clear bits 4-7
 
-	//Set up ADC
-	ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); //Sets ADC prescaler to 128, so frequency is kHz
-	ADMUX |= (1 << REFS0); //Sets ADC reference voltage to AVCC
-			//ADMUX = (ADMUX & 0xF0) | (1 << MUX0);
-	ADCSRA |= (1 << ADATE); //Enable auto-trigger
-	//Free running mode already enabled
-	ADMUX |= (1 << ADLAR); //Reduces precision from 10 to 8 bits from faster reading (only read from ADCH
+	motor_stop(); //shuts off all motor gates
 
+	//Set up ADC
+	ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); //Sets ADC prescaler to 128, so frequency is 125 kHz
+	ADMUX |= (1 << REFS0); //Sets ADC reference voltage to AVCC
+	ADCSRA |= (1 << ADATE); //Enable auto-trigger, free running mode already enabled
+	ADMUX |= (1 << ADLAR); //Reduces precision from 10 to 8 bits from faster reading (only read from ADCH
 	ADCSRA |= (1 << ADEN); //Enable ADC
 	ADCSRA |= (1 << ADSC); //ADC start conversion
-
-	//Set up INT1 for thermal warnings (PD3)
+ 
+	//Set up INT1 interrupt for severe thermal warning (PD3)
 	EICRA &= ~((1 << ISC11)|(1 << ISC10)); //redundant line
 	EIMSK |= (1 << INT1);
 
+	//Set up PCINT1 interrupt for back-EMF sensing from analog comparator
 	PCICR |= (1 << PCIE1); //enable interrupts for PORTC (analog pins on Arduino)
 	PCMSK1 = (1 << PCINT13)|(1 << PCINT12)|(1 << PCINT11); //enable on A3-A5 specifically (PORTC bits 3-5)
 
-	//LED & thermal timer
+	//LED timer
 	TCCR0A |= (1 << WGM01); // Configure timer 0 for CTC mode
 	OCR0A = 255; // for LED; delay of ~114 ms after additional delay from the counter in the ISR
-	//OCR0B = 200; // for Thermal; delay of ~90ms after additional delay from the counter in the ISR
 	TIMSK0 |= (1 << OCIE0A);  // for LED; Enable CTC interrupt (TIMER0_COMPA_vect)
-	//TIMSK0 |= (1 << OCIE0B);  // for thermal; Enable CTC interrupt (TIMER0_COMPB_vect)
 	TCCR0B |= ((1 << CS02) | (1 << CS00)); // Start timer 0 at Fcpu/1024
 	//The value of this timer is stored in TCNT0
 
 	//Thermal timer
 	TCCR2A |= (1 << WGM21);
-	OCR2A = 255;
+	OCR2A = 250;
 	TIMSK2 |= (1 << OCIE2A);
 	TCCR2B |= ((1 << CS22) | (1 << CS21) | (1 << CS20)); // Start timer at Fcpu/1024
 
@@ -76,8 +76,6 @@ void initialize()
 	motor_forwards = true;
 	expected_motor_state = 1;
 
-	motor_stop(); //shuts off all motor gates
-
 	sei();			//global enable interrupts
 }
 
@@ -85,35 +83,38 @@ int main() {
 
 	initialize();
 
-	//motor_off = false;
+	motor_off = false;
 
 	//set_flash_green();
 	//set_flash_red();
 	//set_flash_yellow();
 
 	//f1();
+	startup_f1();
 
-	while(1){
+	while(true){
 		//TOG_LED_YELLOW();
-		_delay_ms(BLINK_DELAY_MS);
+		//_delay_ms(BLINK_DELAY_MS);
 
 		
 
 
 
 		//ACTUAL REPEATED CODE
-		//take timestamp
-		//if motor is running, compare timestamp with last change
-			//if difference is greater than MAX_tiME_IN_STATE_US
-				//turn off motor, motor_off = true
+		
 
-		if(motor_state_change_flag == true) {
+		if(motor_emergency_stop_flag == true) {
 			//take timestamp
 			//compare timestamp with last
 
 			//if 
-			//TOG_LED_RED();
-			motor_state_change_flag = false;
+			//SET_LED_RED();
+			while(hottest_adc_reading < high_adc_reading){
+				bool placefiller = true;
+			}
+			clear_flash_red();
+
+			motor_emergency_stop_flag = false;
 		}
 		
 	}

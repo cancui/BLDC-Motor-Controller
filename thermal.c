@@ -12,12 +12,14 @@ const uint8_t operational_adc_reading 	= 128; // at ~60C
 const uint8_t high_adc_reading 			= 52; // at ~110C
 const uint8_t critical_adc_reading 		= 43; // at ~150C
 
+volatile uint8_t hottest_adc_reading = 255;
+
 ISR(TIMER2_COMPA_vect)
 {
 	static uint8_t thermal_count = 1;
 
 	if(thermal_count >= 5) {
-		static uint8_t hottest_reading = 255;
+		
 		static uint8_t adc_to_sample = 0;
 
 		if(adc_to_sample == 0) {
@@ -29,19 +31,19 @@ ISR(TIMER2_COMPA_vect)
 		} else {
 			ADMUX = (ADMUX & 0xF0);
 			adc_to_sample = 0;
-			hottest_reading = 255;
+			hottest_adc_reading = 255;
 		}
 
 		uint8_t reading = ADCH;
 		
-		if(reading < hottest_reading){
-			hottest_reading = reading;
+		if(reading < hottest_adc_reading){
+			hottest_adc_reading = reading;
 		}
 
-		if(hottest_reading < critical_adc_reading) {
+		if(hottest_adc_reading < critical_adc_reading) {
 			set_flash_yellow();
 			//CLR_LED_YELLOW();
-		} else if(hottest_reading < high_adc_reading) {
+		} else if(hottest_adc_reading < high_adc_reading) {
 			clear_flash_yellow();
 			SET_LED_YELLOW();
 			//CLR_LED_YELLOW();
@@ -61,6 +63,7 @@ ISR(INT1_vect)
 {
 	motor_stop();
 	motor_off = true;
+	motor_emergency_stop_flag = true;
 	//SET_LED_RED();
 	set_flash_red();
 	//set_flash_yellow();

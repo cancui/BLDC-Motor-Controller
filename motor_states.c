@@ -6,6 +6,7 @@
 
 volatile bool motor_state_change_flag = false; //had extern
 
+/*
 void motor_stop()
 {
 	CLR_MOTOR_GATE_1();
@@ -26,18 +27,6 @@ void test_gates_on()
 	SET_MOTOR_GATE_6();
 	TCNT1 = 0;
 	motor_state_change_flag = true;
-}
-
-void flash_motor_gates()
-{
-	test_gates_on();
-	_delay_ms(100);
-	motor_stop();
-	_delay_ms(100);
-	test_gates_on();
-	_delay_ms(100);
-	motor_stop();
-	_delay_ms(100);
 }
 
 void f1()
@@ -111,3 +100,17 @@ void b3()
 	TCNT1 = 0;
 	motor_state_change_flag = true;
 }
+*/
+
+//new implementation
+
+extern inline void motor_stop(); 
+extern inline void test_gates_on();
+
+extern inline void f1();
+extern inline void f2();
+extern inline void f3();
+
+extern inline void b1();
+extern inline void b2();
+extern inline void b3();

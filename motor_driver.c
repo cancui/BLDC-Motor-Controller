@@ -16,6 +16,7 @@ void delay_100us(unsigned us)
 	}
 }
 
+//in 100's of microseconds, to provide greater precision than ms without use of floating-point numbers
 void cycle_f(unsigned us100) 
 {
 	f1();
@@ -26,6 +27,7 @@ void cycle_f(unsigned us100)
 	delay_100us(us100);
 }
 
+//in 100's of microseconds, to provide greater precision than ms without use of floating-point numbers
 void cycle_b(unsigned us100) 
 {
 	b1();
@@ -43,6 +45,8 @@ void simple1()
 	}
 }
 
+const uint8_t cycle_delays1[5] = { 40,30,20,20,20 };
+
 void startup_f1()
 {
 	//disable EMF interrupt
@@ -51,25 +55,21 @@ void startup_f1()
 	//disable timer interrupt
 	TIMSK1 &= ~(1 << OCIE1A); 
 
-	//CLR_LED_RED();
-	//CLR_LED_YELLOW();
-	//clear_flash_red();
-	//clear_flash_yellow();
+	clear_flash_green();
 
 	motor_off = false;
+	motor_forwards = true;
 
 	//Startup routine
-	for(uint8_t i = 0; i < 3; i++){
-		break;
-	}
-	for(uint8_t i = 0; i < 3; i++){
-		break;
-	}
-	for(uint8_t i = 0; i < 3; i++){
-		break;
-	}
-	for(uint8_t i = 0; i < 3; i++){
-		break;
+	f1();
+	_delay_ms(7);
+	f2();
+	_delay_ms(6);
+	f3();
+	_delay_ms(5);
+	uint8_t cycles = 0;
+	while(!motor_emergency_stop_flag && cycles < 5) {
+		cycle_f(cycle_delays1[cycles++]);
 	}
 
 	// Enable CTC interrupt
@@ -83,17 +83,18 @@ void startup_f1()
 volatile bool motor_off = true;//had extern
 volatile bool motor_forwards = true; //had extern
 volatile uint8_t expected_motor_state = 1;//had extern
-
+volatile bool motor_emergency_stop_flag = false;
 
 ISR(TIMER1_COMPA_vect)
 {
 	motor_stop();
-	if(motor_off) {
-		set_flash_red();
+
+	if(!motor_off) {
+		motor_emergency_stop_flag = true;
+		motor_off = true;
 		set_flash_green();
 	}
 }
-
 
 //TODO: remove all delays from ISR
 ISR (PCINT1_vect) 
@@ -104,7 +105,7 @@ ISR (PCINT1_vect)
 	//check if motor_off or triggered by high->low
 	//TODO: check if there's a more efficient way to do this
 
-	if(motor_off || (!(PINC_state & 0x08) && !(PINC_state & 0x10) && !(PINC_state & 0x20)) ) { 
+	if(motor_off || motor_emergency_stop_flag || (!(PINC_state & 0x08) && !(PINC_state & 0x10) && !(PINC_state & 0x20)) ) { 
 
 		//motor_stop();
 
