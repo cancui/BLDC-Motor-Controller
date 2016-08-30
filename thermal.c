@@ -8,7 +8,7 @@
 #include <avr/interrupt.h>
 
 const uint8_t operational_adc_reading 	= 128; // at ~60C
-const uint8_t high_adc_reading 			= 52; // at ~110C
+const uint8_t high_adc_reading 			= 62; // at ~100C
 const uint8_t critical_adc_reading 		= 43; // at ~150C
 
 volatile bool sample_gate_temperatures_flag = false;
@@ -31,6 +31,29 @@ void sample_gate_temperatures(){
 */
 		static uint8_t adc_to_sample = 0;
 
+		uint8_t reading;
+
+		if(adc_to_sample == 0) {
+			reading = get_simple_moving_average(temperatures_adc0, ADCH);
+
+			ADMUX = (ADMUX & 0xF0) | (1 << MUX0);
+			adc_to_sample = 1;
+		} else if(adc_to_sample == 1) {
+			reading = get_simple_moving_average(temperatures_adc1, ADCH);
+
+			ADMUX = (ADMUX & 0xF0) | (1 << MUX1);
+			adc_to_sample = 2;
+		} else {
+			reading = get_simple_moving_average(temperatures_adc2, ADCH);
+
+			ADMUX = (ADMUX & 0xF0);
+			adc_to_sample = 0;
+			hottest_adc_reading = reading;
+		}
+
+
+
+/*
 		if(adc_to_sample == 0) {
 			ADMUX = (ADMUX & 0xF0) | (1 << MUX0);
 			adc_to_sample = 1;
@@ -42,9 +65,7 @@ void sample_gate_temperatures(){
 			adc_to_sample = 0;
 			hottest_adc_reading = ADCH;
 		}
-
-		uint8_t reading = ADCH;
-		
+*/
 		if(reading < hottest_adc_reading){
 			hottest_adc_reading = reading;
 		}
