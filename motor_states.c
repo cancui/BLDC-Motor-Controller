@@ -1,8 +1,5 @@
 #include "motor_states.h"
-#include "pins.h"
 //#include "main.h"
-
-#include <util/delay.h>
 
 volatile bool motor_state_change_flag = false; //had extern
 

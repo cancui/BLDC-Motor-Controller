@@ -47,15 +47,19 @@ void simple1()
 
 const uint8_t cycle_delays1[5] = { 40,30,20,20,20 };
 
-void startup_f1()
+bool startup_f1()
 {
+	if(motor_emergency_stop_flag) {
+		return false;
+	}
+
 	//disable EMF interrupt
 	PCICR &= ~(1 << PCIE1); 
 
 	//disable timer interrupt
 	TIMSK1 &= ~(1 << OCIE1A); 
 
-	clear_flash_green();
+	//clear_flash_green();
 
 	motor_off = false;
 	motor_forwards = true;
@@ -78,6 +82,8 @@ void startup_f1()
 
 	//enable EMF interrupt
 	PCICR |= (1 << PCIE1); //enable interrupts for PORTC (analog pins on Arduino)
+
+	return true;
 }
 
 volatile bool motor_off = true;//had extern

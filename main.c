@@ -12,6 +12,8 @@
 static const uint8_t 	BLINK_DELAY_MS = 15;
 static const uint8_t	MAX_TIME_IN_STATE_MS = 10;
 
+#define REPEAT while(true) 
+
 //TODO: Can another interrupt of a different ISR be queued during first interrupt? If no, allow nested interrupts
 //TODO: communications (no speed control, but forwards and backwards control)
 //TODO: EEPROM settings and logging system
@@ -35,6 +37,10 @@ void initialize()
 
 	motor_stop(); //shuts off all motor gates
 
+	temperatures_adc0 = new_simple_moving_average(MA_MAX_SIZE);
+	temperatures_adc1 = new_simple_moving_average(MA_MAX_SIZE);
+	temperatures_adc2 = new_simple_moving_average(MA_MAX_SIZE);
+
 	//Set up ADC
 	ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); //Sets ADC prescaler to 128, so frequency is 125 kHz
 	ADMUX |= (1 << REFS0); //Sets ADC reference voltage to AVCC
@@ -42,9 +48,9 @@ void initialize()
 	ADMUX |= (1 << ADLAR); //Reduces precision from 10 to 8 bits from faster reading (only read from ADCH
 	ADCSRA |= (1 << ADEN); //Enable ADC
 	ADCSRA |= (1 << ADSC); //ADC start conversion
- 
+
 	//Set up INT1 interrupt for severe thermal warning (PD3)
-	EICRA &= ~((1 << ISC11)|(1 << ISC10)); //redundant line
+	EICRA &= ~((1 << ISC11)|(1 << ISC10)); //redundant line (low level of PD3 generates interrupt request)
 	EIMSK |= (1 << INT1);
 
 	//Set up PCINT1 interrupt for back-EMF sensing from analog comparator
@@ -88,33 +94,39 @@ int main() {
 	//set_flash_green();
 	//set_flash_red();
 	//set_flash_yellow();
-
-	//f1();
+	
 	startup_f1();
 
-	while(true){
+	REPEAT {
 		//TOG_LED_YELLOW();
 		//_delay_ms(BLINK_DELAY_MS);
 
-		
-
-
 
 		//ACTUAL REPEATED CODE
-		
+		if(sample_gate_temperatures_flag) {
+			sample_gate_temperatures();
+			sample_gate_temperatures_flag = false;
+		}
 
-		if(motor_emergency_stop_flag == true) {
+		if(motor_emergency_stop_flag) {
 			//take timestamp
 			//compare timestamp with last
 
 			//if 
 			//SET_LED_RED();
-			while(hottest_adc_reading < high_adc_reading){
-				bool placefiller = true;
-			}
-			clear_flash_red();
 
-			motor_emergency_stop_flag = false;
+			//while(hottest_adc_reading < high_adc_reading){
+			//	bool placefiller = true;
+			//}
+			//clear_flash_red();
+			//motor_emergency_stop_flag = false;
+
+			//Note that lower value means hotter
+			if(hottest_adc_reading >= high_adc_reading){
+				clear_flash_red();
+				CLR_LED_RED();
+				motor_emergency_stop_flag = false;
+			}
 		}
 		
 	}
