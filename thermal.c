@@ -51,8 +51,6 @@ void sample_gate_temperatures(){
 			hottest_adc_reading = reading;
 		}
 
-
-
 /*
 		if(adc_to_sample == 0) {
 			ADMUX = (ADMUX & 0xF0) | (1 << MUX0);
@@ -93,4 +91,5 @@ ISR(INT1_vect)
 	//set_flash_red();
 	SET_LED_RED();
 	EIFR |= (1 << INTF1);
+	EIMSK &= ~(1 << INT1);
 }
