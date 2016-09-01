@@ -17,8 +17,7 @@ void clear_flash_yellow();
 
 void delay_and_flash_100ms(uint8_t ms_100);
 
-//Stuff like this should be initialized when initializing the LEDs
-volatile bool flash_leds_flag;
+//volatile bool flash_leds_flag;
 
 void flash_leds();
 

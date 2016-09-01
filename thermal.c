@@ -11,9 +11,6 @@ const uint8_t operational_adc_reading 	= 128; // at ~60C
 const uint8_t high_adc_reading 			= 62; // at ~100C
 const uint8_t critical_adc_reading 		= 43; // at ~150C
 
-//volatile bool sample_gate_temperatures_flag = false;
-//volatile uint8_t hottest_adc_reading = 255;
-
 void init_thermal()
 {
 	//Allocate buffers for taking a moving average of temperature data
@@ -21,7 +18,7 @@ void init_thermal()
 	temperatures_adc1 = new_simple_moving_average(MA_MAX_SIZE);
 	temperatures_adc2 = new_simple_moving_average(MA_MAX_SIZE);
 
-	sample_gate_temperatures_flag = false;
+	//sample_gate_temperatures_flag = false;
 	hottest_adc_reading = 255;
 
 	//Set up ADC

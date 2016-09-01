@@ -1,4 +1,3 @@
-//#include "main.h"
 #include "pins.h"
 #include "led.h"
 #include "thermal.h"
@@ -11,12 +10,8 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-//static const uint8_t 	BLINK_DELAY_MS = 15;
-//static const uint8_t	MAX_TIME_IN_STATE_MS = 10;
-
 #define REPEAT while(true) 
 
-//TODO: implement task prioritization (i.e. switching motor state is always highest)
 //TODO: control messages, actual motor controller logic
 void initialize() 
 {
@@ -55,8 +50,6 @@ void initialize()
 
 	//TODO: complete motor state timer implementation
 
-	//Reset timers
-
 	sei();	//global enable interrupts
 }
 
@@ -72,108 +65,11 @@ int main() {
 	
 	startup_f1();
 
-	/*
-	UART_enqueue('1');
-	UART_enqueue('2');
-	UART_enqueue('3');
-	UART_enqueue('4');
-	UART_enqueue('5');
-	UART_enqueue('6');
-	UART_enqueue('7');
-	UART_enqueue('8');
-	UART_enqueue('9');
-	UART_enqueue('a');
-	UART_enqueue('b');
-	UART_enqueue('c');
-	UART_enqueue('d');
-	UART_enqueue('e');
-	UART_enqueue('f');
-	*/
-	/*
-	UART_enqueue_string("hello!");
-	UART_enqueue('\n\n');
-
-	unsigned char *mystr = (unsigned char *)malloc(sizeof(unsigned char) * 10);
-	//decimal_to_string(string_to_decimal("1234"), mystr);
-	decimal_to_string(12345, mystr);
-	UART_enqueue_string(mystr);
-	
-	UART_enqueue('\n\n');
-	UART_write_flush();
-	UART_enqueue_string(mystr);
-	UART_enqueue('\n\n');
-	UART_enqueue_string(mystr);
-	UART_write_flush();
-	UART_enqueue('\n\n');
-	UART_enqueue_string("ending");
-
-	SET_LED_RED();
-	_delay_ms(1000);
-	CLR_LED_RED();
-
-	*/
 
 	REPEAT {
-		//TOG_LED_YELLOW();
-		//_delay_ms(BLINK_DELAY_MS);
-
-		//UDR0 = 'a';
-		//_delay_ms(500);
-		
-		//ACTUAL REPEATED CODE
-
-		/*
-		unsigned char just_read = UART_read();
-		if(just_read == 'p'){
-			TOG_LED_GREEN();
-		}
-		if(just_read == ' '){
-			TOG_LED_RED();
-		}
-		_delay_ms(50);
-		UART_write('\n');
-		UART_write(just_read);
-		*/
-		//UART_write_flush();
-		//UART_enqueue('z');
-		//UART_write();
-		//if(back_emf_zero_crossing_flag){
-		//	change_motor_state();
-		//	back_emf_zero_crossing_flag = false;
-		//}
-
-		//if(flash_leds_flag){
-		//	flash_leds();
-		//	flash_leds_flag = false;
-		//}
-
-		//if(!queue_is_empty(tx_queue)){
-		//	UART_write();
-		//}
-/*
-		if(rx_overflow_flag){
-			UART_enqueue_urgent('\n');
-			UART_write();
-			while(rx_queue_length > 0){
-				UART_enqueue(UART_read());
-			}
-			UART_write_flush();
-			rx_overflow_flag = false;
-		}
-*/
-
-		//if(sample_gate_temperatures_flag) {
-		//	sample_gate_temperatures();
-		//	sample_gate_temperatures_flag = false;
-		//}
-
-		//if(motor_emergency_stop_flag) {
-		//	check_if_safe_to_restart();
-		//}
 		if(!do_task(tasks_high_priority)) {
 			do_task(tasks_low_priority);
 		}
-		
 	}
 
 	return 0;

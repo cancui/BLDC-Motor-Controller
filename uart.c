@@ -129,12 +129,6 @@ bool UART_write_flush()
 
 	return true;
 }
-/*
-void UART_write(unsigned char to_write)
-{
-	while ((UCSR0A & (1 << UDRE0)) == 0) {}; // Do nothing until UDR is ready for more data to be written to it
-	UDR0 = to_write; // Echo back the received byte back to the computer
-}*/
 
 //TODO: Receive triggers interrupt, queues the new character, main() dequeues
 //TODO: Check if it works with the thermal interrupt contantly called
@@ -155,14 +149,6 @@ unsigned char UART_read()
 
 	rx_queue_length--;
 	return just_read;
-
-	/*
-	unsigned char received;
-	while ((UCSR0A & (1 << RXC0)) == 0) {}; // Do nothing until data have been received and is ready to be read from UDR
-	received = UDR0; // Fetch the received byte value into the variable "ByteReceived"
-	return received;
-	*/
-
 }
 
 void UART_test_return_chars()

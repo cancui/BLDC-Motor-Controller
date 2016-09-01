@@ -5,20 +5,8 @@
 #include "thermal.h"
 #include "task_prioritizer.h"
 
-//#include <stdbool.h>
-//#include <stdint.h>
 #include <util/delay.h>
-//#include <avr/io.h>
 #include <avr/interrupt.h>
-/*
-volatile bool motor_off = true;//had extern
-volatile bool motor_forwards = true; //had extern
-volatile uint8_t expected_motor_state = 1;//had extern
-volatile bool motor_emergency_stop_flag = false;
-
-volatile bool back_emf_zero_crossing_flag = false;
-volatile uint8_t back_emf_PORTC_state = 0x00;
-*/
 
 void init_motor_driver()
 {
@@ -29,7 +17,7 @@ void init_motor_driver()
 	expected_motor_state = 1;//had extern
 	motor_emergency_stop_flag = false;
 
-	back_emf_zero_crossing_flag = false;
+	//back_emf_zero_crossing_flag = false;
 	back_emf_PORTC_state = 0x00;
 
 	sum_of_time_between_states = new_simple_moving_average(MOTOR_STATE_CYCLES_PER_FULL_ROTATION * 3);
@@ -232,7 +220,6 @@ ISR(TIMER1_COMPA_vect)
 	}
 }
 
-//TODO: remove all delays from ISR
 ISR (PCINT1_vect) 
 {
 	back_emf_PORTC_state = PINC;

@@ -7,11 +7,12 @@
 #include <stdint.h>
 
 #define FOSC_UART 16000000UL // Clock Speed
-#define BAUD_UART 9600 //#define BAUD_UART 250000UL //#define BAUD_UART 115200UL
-#define UBRR_UART FOSC_UART/16/BAUD_UART-1 
+#define BAUD_UART 9600
+#define UBRR_UART (FOSC_UART/16/BAUD_UART-1)
 
 #define UART_QUEUE_MAX_LENGTH 30
 
+//Possible messages to receive and send
 typedef enum {
 	MESSAGE_1 = 0,
 	MESSAGE_2
