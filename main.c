@@ -5,6 +5,7 @@
 #include "motor_driver.h"
 #include "motor_states.h"
 #include "uart.h"
+#include "task_prioritizer.h"
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -165,6 +166,7 @@ int main() {
 
 		if(motor_emergency_stop_flag) {
 			//Note that lower value means hotter
+			//check_if_ok() to replace the following if
 			if(hottest_adc_reading >= high_adc_reading){
 				clear_flash_red();
 				CLR_LED_RED();
@@ -182,11 +184,14 @@ int main() {
 ISR(TIMER0_COMPA_vect)
 {
 	static uint8_t cycle_count = 1;
-	
-	if(cycle_count == 3){
+	if(cycle_count == 2){
 		sample_gate_temperatures_flag = true;
 	}
+/*
+	if(cycle_count == 4 && motor_emergency_stop_flag == true){
 
+	}
+*/
 	if(cycle_count >= 6){
 		flash_leds_flag = true;
 		cycle_count = 0;
