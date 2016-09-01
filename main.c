@@ -86,7 +86,30 @@ int main() {
 	UART_enqueue('e');
 	UART_enqueue('f');
 	*/
+	/*
+	UART_enqueue_string("hello!");
+	UART_enqueue('\n\n');
+
+	unsigned char *mystr = (unsigned char *)malloc(sizeof(unsigned char) * 10);
+	//decimal_to_string(string_to_decimal("1234"), mystr);
+	decimal_to_string(12345, mystr);
+	UART_enqueue_string(mystr);
 	
+	UART_enqueue('\n\n');
+	UART_write_flush();
+	UART_enqueue_string(mystr);
+	UART_enqueue('\n\n');
+	UART_enqueue_string(mystr);
+	UART_write_flush();
+	UART_enqueue('\n\n');
+	UART_enqueue_string("ending");
+
+	SET_LED_RED();
+	_delay_ms(1000);
+	CLR_LED_RED();
+
+	*/
+
 	REPEAT {
 		//TOG_LED_YELLOW();
 		//_delay_ms(BLINK_DELAY_MS);
@@ -121,8 +144,12 @@ int main() {
 			flash_leds_flag = false;
 		}
 
+		if(!queue_is_empty(tx_queue)){
+			UART_write();
+		}
+
 		if(rx_overflow_flag){
-			UART_write_urgent('\n');
+			UART_enqueue_urgent('\n');
 			UART_write();
 			while(rx_queue_length > 0){
 				UART_enqueue(UART_read());

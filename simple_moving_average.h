@@ -22,7 +22,13 @@ void free_simple_moving_average(Simple_moving_average *to_free);
 //returns the current value stored in this->average
 uint8_t peek_simple_moving_average(Simple_moving_average *this);
 
+//returns the current value stored in this->sum
+uint8_t peek_simple_moving_sum(Simple_moving_average *this);
+
 //enter a new data point, then returns the current value stored in this->average
 uint8_t get_simple_moving_average(Simple_moving_average *this, uint8_t new_data_point);
+
+//enter a new data point, then returns the current value stored in this->sum
+uint8_t get_simple_moving_sum(Simple_moving_average *this, uint8_t new_data_point);
 
 #endif

@@ -48,6 +48,41 @@ bool UART_enqueue(unsigned char entry_)
 	return true;
 }
 
+bool UART_enqueue_string(unsigned char* str)
+{
+	if(strlen(str) + 1 > UART_QUEUE_MAX_LENGTH - tx_queue_length){
+		return false;
+	}
+
+	while(*str != '\0'){
+		
+		unsigned char *entry = (unsigned char *)malloc(sizeof(unsigned char));
+
+		if(!entry){
+			return false;
+		}
+
+		*entry = *str;
+		queue_push_head(tx_queue, entry);
+
+		tx_queue_length++;
+		str++;
+	}
+
+	unsigned char *entry_termination = (unsigned char *)malloc(sizeof(unsigned char));
+
+	if(!entry_termination){
+		return false;
+	}
+
+	*entry_termination = '\0';
+	queue_push_head(tx_queue, entry_termination);
+
+	tx_queue_length++;	
+
+	return true;
+}
+
 bool UART_write()
 {
 	if(tx_queue_length < 1 || !(UCSR0A & (1 << UDRE0))){
@@ -64,7 +99,7 @@ bool UART_write()
 	return true;
 }
 
-bool UART_write_urgent(unsigned char to_write)
+bool UART_enqueue_urgent(unsigned char to_write)
 {
 	unsigned char *entry = (unsigned char *)malloc(sizeof(unsigned char));
 

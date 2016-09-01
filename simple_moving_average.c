@@ -39,6 +39,11 @@ uint8_t peek_simple_moving_average(Simple_moving_average *this)
 	return this->average;
 }
 
+uint8_t peek_simple_moving_sum(Simple_moving_average *this)
+{
+	return this->sum;
+}
+
 uint8_t get_simple_moving_average(Simple_moving_average *this, uint8_t new_data_point)
 {
 	this->sum += new_data_point;
@@ -56,4 +61,21 @@ uint8_t get_simple_moving_average(Simple_moving_average *this, uint8_t new_data_
 	this->average = this->sum / this->size;
 
 	return this->average;
+}
+
+uint8_t get_simple_moving_sum(Simple_moving_average *this, uint8_t new_data_point)
+{
+	this->sum += new_data_point;
+
+	if(this->size >= this->max_size){
+		this->sum -= this->data[this->next];
+	} else {
+		this->size++;
+	}
+
+	this->data[this->next] = new_data_point;
+
+	this->next = (++(this->next))%(this->max_size);
+
+	return this->sum;
 }
