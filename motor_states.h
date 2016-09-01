@@ -6,22 +6,8 @@
 #include <stdbool.h>
 #include <avr/interrupt.h>
 
-volatile bool motor_state_change_flag; //had extern
+volatile bool motor_state_change_flag;
 
-/*
-void motor_stop(); 
-void test_gates_on();
-
-void f1();
-void f2();
-void f3();
-
-void b1();
-void b2();
-void b3();
-*/
-
-//new implementation
 inline void motor_stop()
 {
 	cli();

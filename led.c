@@ -81,7 +81,7 @@ void delay_and_flash_100ms(uint8_t ms_100)
 	}
 }
 
-volatile bool flash_leds_flag = false;
+//volatile bool flash_leds_flag = false;
 
 void flash_leds(){
 	cli();
