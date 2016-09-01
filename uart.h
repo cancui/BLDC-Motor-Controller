@@ -12,6 +12,11 @@
 
 #define UART_QUEUE_MAX_LENGTH 30
 
+typedef enum {
+	MESSAGE_1 = 0,
+	MESSAGE_2
+} UART_commands;
+
 Queue *rx_queue; 
 Queue *tx_queue;
 uint8_t rx_queue_length;

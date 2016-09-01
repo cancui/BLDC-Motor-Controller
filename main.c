@@ -17,7 +17,7 @@
 
 //TODO: verify/set 16Mhz clock
 //TODO: Can another interrupt of a different ISR be queued during first interrupt? If no, allow nested interrupts
-//TODO: UART communications (no speed control, but forwards and backwards control)
+//TODO: control messages
 //TODO: EEPROM settings and logging system
 void initialize() 
 {
