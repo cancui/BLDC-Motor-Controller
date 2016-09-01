@@ -99,6 +99,8 @@ bool UART_write()
 	return true;
 }
 
+
+
 bool UART_enqueue_urgent(unsigned char to_write)
 {
 	unsigned char *entry = (unsigned char *)malloc(sizeof(unsigned char));
@@ -161,6 +163,16 @@ unsigned char UART_read()
 	return received;
 	*/
 
+}
+
+void UART_test_return_chars()
+{
+	UART_enqueue_urgent('\n');
+	UART_write();
+	while(rx_queue_length > 0){
+		UART_enqueue(UART_read());
+	}
+	UART_write_flush();
 }
 
 ISR(USART_RX_vect)

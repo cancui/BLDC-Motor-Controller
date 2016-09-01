@@ -34,4 +34,6 @@ bool UART_write_flush();
 
 unsigned char UART_read();
 
+void UART_test_return_chars();
+
 #endif

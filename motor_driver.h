@@ -31,6 +31,8 @@ bool startup_f1();
 
 void change_motor_state();
 
+void check_if_safe_to_restart(); //For the task prioritizer
+
 uint16_t get_rotations_per_second();
 
 #endif

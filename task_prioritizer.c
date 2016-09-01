@@ -30,7 +30,7 @@ bool do_task(Queue *queue)
 	if(queue_is_empty(queue)){
 		return false;
 	}
-	
+
 	Task *to_do = queue_pop_tail(queue);
 	to_do->task_function();
 	to_do->task_function = NULL;

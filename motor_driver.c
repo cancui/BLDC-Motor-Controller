@@ -2,6 +2,8 @@
 #include "motor_states.h"
 #include "pins.h"
 #include "led.h"
+#include "thermal.h"
+#include "task_prioritizer.h"
 
 //#include <stdbool.h>
 //#include <stdint.h>
@@ -209,6 +211,17 @@ uint16_t get_rotations_per_second()
 	sei();
 }
 
+void check_if_safe_to_restart()
+{
+	//Note that lower value means hotter
+	if(hottest_adc_reading >= high_adc_reading){
+		clear_flash_red();
+		CLR_LED_RED();
+		motor_emergency_stop_flag = false;
+		EIMSK |= (1 << INT1); //turn on interrupt for severe thermal warning again
+	}
+}
+
 ISR(TIMER1_COMPA_vect)
 {
 	motor_stop();
@@ -223,7 +236,7 @@ ISR(TIMER1_COMPA_vect)
 ISR (PCINT1_vect) 
 {
 	back_emf_PORTC_state = PINC;
-	back_emf_zero_crossing_flag = true;
-	
+	//back_emf_zero_crossing_flag = true;
+	enqueue_task(tasks_high_priority, change_motor_state);
 	PCIFR |= (1 << PCIF1); //clear the flag for this interrupt
 }  

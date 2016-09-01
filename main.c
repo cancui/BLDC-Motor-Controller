@@ -44,6 +44,8 @@ void initialize()
 	//Set up UART
 	init_UART(UBRR_UART);
 
+	init_task_prioritizer();
+
 	//Task scheduler timer (Used for LED flashing and thermal monitoring)
 	TCCR0A |= (1 << WGM01); // Configure timer 0 for CTC mode
 	OCR0A = 255; // for LED; delay of ~114 ms after additional delay from the counter in the ISR
@@ -135,20 +137,20 @@ int main() {
 		//UART_write_flush();
 		//UART_enqueue('z');
 		//UART_write();
-		if(back_emf_zero_crossing_flag){
-			change_motor_state();
-			back_emf_zero_crossing_flag = false;
-		}
+		//if(back_emf_zero_crossing_flag){
+		//	change_motor_state();
+		//	back_emf_zero_crossing_flag = false;
+		//}
 
-		if(flash_leds_flag){
-			flash_leds();
-			flash_leds_flag = false;
-		}
+		//if(flash_leds_flag){
+		//	flash_leds();
+		//	flash_leds_flag = false;
+		//}
 
-		if(!queue_is_empty(tx_queue)){
-			UART_write();
-		}
-
+		//if(!queue_is_empty(tx_queue)){
+		//	UART_write();
+		//}
+/*
 		if(rx_overflow_flag){
 			UART_enqueue_urgent('\n');
 			UART_write();
@@ -158,21 +160,18 @@ int main() {
 			UART_write_flush();
 			rx_overflow_flag = false;
 		}
+*/
 
-		if(sample_gate_temperatures_flag) {
-			sample_gate_temperatures();
-			sample_gate_temperatures_flag = false;
-		}
+		//if(sample_gate_temperatures_flag) {
+		//	sample_gate_temperatures();
+		//	sample_gate_temperatures_flag = false;
+		//}
 
-		if(motor_emergency_stop_flag) {
-			//Note that lower value means hotter
-			//check_if_ok() to replace the following if
-			if(hottest_adc_reading >= high_adc_reading){
-				clear_flash_red();
-				CLR_LED_RED();
-				motor_emergency_stop_flag = false;
-				EIMSK |= (1 << INT1);
-			}
+		//if(motor_emergency_stop_flag) {
+		//	check_if_safe_to_restart();
+		//}
+		if(!do_task(tasks_high_priority)) {
+			do_task(tasks_low_priority);
 		}
 		
 	}
@@ -183,17 +182,27 @@ int main() {
 //Periodically requests for thermal sampling and LED toggling (for flashing)
 ISR(TIMER0_COMPA_vect)
 {
-	static uint8_t cycle_count = 1;
-	if(cycle_count == 2){
-		sample_gate_temperatures_flag = true;
+	for(uint8_t i = 0; i < tx_queue_length; i++){
+		enqueue_task(tasks_low_priority, UART_write);
 	}
-/*
-	if(cycle_count == 4 && motor_emergency_stop_flag == true){
 
+	if(rx_overflow_flag){
+		enqueue_task(tasks_low_priority, UART_test_return_chars);
+		rx_overflow_flag = false;
 	}
-*/
-	if(cycle_count >= 6){
-		flash_leds_flag = true;
+	
+	static uint8_t cycle_count = 1;
+
+	if(cycle_count == 2){
+		//sample_gate_temperatures_flag = true;
+		enqueue_task(tasks_low_priority, sample_gate_temperatures);
+	} else if(cycle_count == 4 && motor_emergency_stop_flag == true){
+		//schedule check_if_safe_to_restart();
+		enqueue_task(tasks_low_priority, check_if_safe_to_restart);
+	} else if(cycle_count >= 6){
+		//flash_leds_flag = true;
+		//cycle_count = 0;
+		enqueue_task(tasks_low_priority, flash_leds);
 		cycle_count = 0;
 	}
 
