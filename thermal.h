@@ -20,6 +20,7 @@ volatile Simple_moving_average *temperatures_adc2;
 volatile bool sample_gate_temperatures_flag;
 volatile uint8_t hottest_adc_reading;
 
+void init_thermal();
 void sample_gate_temperatures();
 
 #endif

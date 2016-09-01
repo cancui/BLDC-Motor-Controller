@@ -7,16 +7,20 @@
 
 void all_leds_on()
 {
+	cli();
 	SET_LED_GREEN();
 	SET_LED_RED();
 	SET_LED_YELLOW();
+	sei();
 }
 
 void all_leds_off()
 {
+	cli();
 	CLR_LED_GREEN();
 	CLR_LED_RED();
 	CLR_LED_YELLOW();
+	sei();
 }
 
 static bool flash_green = false; 
@@ -77,20 +81,18 @@ void delay_and_flash_100ms(uint8_t ms_100)
 	}
 }
 
-ISR(TIMER0_COMPA_vect)
-{
-	static uint8_t led_count = 1;
-	if(led_count >= 6) {
-		if(flash_green) {
-			TOG_LED_GREEN();
-		}
-		if(flash_red) {
-			TOG_LED_RED();
-		}
-		if(flash_yellow) {
-			TOG_LED_YELLOW();
-		}
-		led_count = 0;
+volatile bool flash_leds_flag = false;
+
+void flash_leds(){
+	cli();
+	if(flash_green) {
+		TOG_LED_GREEN();
 	}
-	led_count++;
+	if(flash_red) {
+		TOG_LED_RED();
+	}
+	if(flash_yellow) {
+		TOG_LED_YELLOW();
+	}
+	sei();
 }

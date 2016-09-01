@@ -4,6 +4,7 @@
 #include "pins.h"
 
 #include <stdbool.h>
+#include <avr/interrupt.h>
 
 volatile bool motor_state_change_flag; //had extern
 
@@ -23,16 +24,19 @@ void b3();
 //new implementation
 inline void motor_stop()
 {
+	cli();
 	CLR_MOTOR_GATE_1();
 	CLR_MOTOR_GATE_2();
 	CLR_MOTOR_GATE_3();
 	CLR_MOTOR_GATE_4();
 	CLR_MOTOR_GATE_5();
 	CLR_MOTOR_GATE_6();
+	sei();
 }
 
 inline void test_gates_on()
 {
+	cli();
 	SET_MOTOR_GATE_1();
 	SET_MOTOR_GATE_2();
 	SET_MOTOR_GATE_3();
@@ -41,10 +45,12 @@ inline void test_gates_on()
 	SET_MOTOR_GATE_6();
 	TCNT1 = 0;
 	motor_state_change_flag = true;
+	sei();
 }
 
 inline void f1()
 {
+	cli();
 	SET_MOTOR_GATE_1();
 	CLR_MOTOR_GATE_2();
 	CLR_MOTOR_GATE_3();
@@ -53,10 +59,12 @@ inline void f1()
 	CLR_MOTOR_GATE_6();
 	TCNT1 = 0;
 	motor_state_change_flag = true;
+	sei();
 }
 
 inline void f2()
 {
+	cli();
 	CLR_MOTOR_GATE_1();
 	SET_MOTOR_GATE_2();
 	CLR_MOTOR_GATE_3();
@@ -65,10 +73,12 @@ inline void f2()
 	SET_MOTOR_GATE_6();
 	TCNT1 = 0;
 	motor_state_change_flag = true;
+	sei();
 }
 
 inline void f3()
 {
+	cli();
 	CLR_MOTOR_GATE_1();
 	CLR_MOTOR_GATE_2();
 	SET_MOTOR_GATE_3();
@@ -77,10 +87,12 @@ inline void f3()
 	CLR_MOTOR_GATE_6();
 	TCNT1 = 0;
 	motor_state_change_flag = true;
+	sei();
 }
 
 inline void b1()
 {
+	cli();
 	CLR_MOTOR_GATE_1();
 	SET_MOTOR_GATE_2();
 	CLR_MOTOR_GATE_3();
@@ -89,10 +101,12 @@ inline void b1()
 	CLR_MOTOR_GATE_6();
 	TCNT1 = 0;
 	motor_state_change_flag = true;
+	sei();
 }
 
 inline void b2()
 {
+	cli();
 	SET_MOTOR_GATE_1();
 	CLR_MOTOR_GATE_2();
 	CLR_MOTOR_GATE_3();
@@ -101,10 +115,12 @@ inline void b2()
 	SET_MOTOR_GATE_6();
 	TCNT1 = 0;
 	motor_state_change_flag = true;
+	sei();
 }
 
 inline void b3()
 {
+	cli();
 	CLR_MOTOR_GATE_1();
 	CLR_MOTOR_GATE_2();
 	SET_MOTOR_GATE_3();
@@ -113,6 +129,7 @@ inline void b3()
 	CLR_MOTOR_GATE_6();
 	TCNT1 = 0;
 	motor_state_change_flag = true;
+	sei();
 }
 
 #endif
