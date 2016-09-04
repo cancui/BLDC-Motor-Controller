@@ -13,7 +13,7 @@ volatile bool motor_forwards;
 volatile uint8_t expected_motor_state; 
 volatile bool motor_emergency_stop_flag;
 
-//volatile bool back_emf_zero_crossing_flag;
+volatile bool back_emf_zero_crossing_flag;
 volatile uint8_t back_emf_PORTC_state;
 
 Simple_moving_average *sum_of_time_between_states;

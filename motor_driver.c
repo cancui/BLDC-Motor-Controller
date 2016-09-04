@@ -17,7 +17,7 @@ void init_motor_driver()
 	expected_motor_state = 1;//had extern
 	motor_emergency_stop_flag = false;
 
-	//back_emf_zero_crossing_flag = false;
+	back_emf_zero_crossing_flag = false;
 	back_emf_PORTC_state = 0x00;
 
 	sum_of_time_between_states = new_simple_moving_average(MOTOR_STATE_CYCLES_PER_FULL_ROTATION * 3);
@@ -133,12 +133,10 @@ void change_motor_state()
 		return;
 	}
 
-	cli();
-	get_simple_moving_sum(sum_of_time_between_states, TCNT1);
-	sei();
-	//toggle_led_red();
-	//_delay_ms(100);
-
+	//cli();
+	//get_simple_moving_sum(sum_of_time_between_states, TCNT1);
+	//sei();
+	
 	if(motor_forwards) {
 		//if f1, check A5 (bit 5)
 		if(expected_motor_state == 1 && local_back_emf_PORTC_state & _BV(4)) {
@@ -223,7 +221,7 @@ ISR(TIMER1_COMPA_vect)
 ISR (PCINT1_vect) 
 {
 	back_emf_PORTC_state = PINC;
-	//back_emf_zero_crossing_flag = true;
-	enqueue_task(tasks_high_priority, change_motor_state);
+	back_emf_zero_crossing_flag = true;
+	//enqueue_task(tasks_high_priority, change_motor_state);
 	PCIFR |= (1 << PCIF1); //clear the flag for this interrupt
 }  

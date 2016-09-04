@@ -34,6 +34,8 @@ bool UART_write();
 bool UART_write_flush();
 
 unsigned char UART_read();
+void UART_interpret(); //For ISR
+void UART_receive(); //For ISR (doing the work in the actual ISR seems better)
 
 void UART_test_return_chars();
 

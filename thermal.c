@@ -4,6 +4,7 @@
 #include "motor_driver.h"
 #include "motor_states.h"
 #include "led.h"
+#include "task_prioritizer.h"
 
 #include <avr/interrupt.h>
 
@@ -73,13 +74,26 @@ void sample_gate_temperatures(){
 	}
 }
 
-ISR(INT1_vect)
+void motor_thermal_stop()
 {
 	motor_stop();
 	motor_off = true;
 	motor_emergency_stop_flag = true;
-	//set_flash_red();
+	back_emf_zero_crossing_flag = false;
 	SET_LED_RED();
+}
+
+ISR(INT1_vect)
+{
+	/*
+	motor_stop();
+	motor_off = true;
+	motor_emergency_stop_flag = true;
+	back_emf_zero_crossing_flag = false;
+	SET_LED_RED();
+	*/
+	enqueue_task(tasks_high_priority, motor_thermal_stop);
+
 	EIFR |= (1 << INTF1);
 	EIMSK &= ~(1 << INT1);
 }

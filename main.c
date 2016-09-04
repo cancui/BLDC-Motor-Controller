@@ -67,9 +67,23 @@ int main() {
 
 
 	REPEAT {
-		if(!do_task(tasks_high_priority)) {
+		
+		if(back_emf_zero_crossing_flag){
+			change_motor_state();
+			back_emf_zero_crossing_flag = false;
+		} else if(!do_task(tasks_high_priority)) {
 			do_task(tasks_low_priority);
 		}
+		/*
+		if(!do_task(tasks_high_priority)){
+			if(back_emf_zero_crossing_flag){
+				change_motor_state();
+				back_emf_zero_crossing_flag = false;
+			} else {
+				do_task(tasks_low_priority);
+			}
+		}*/
+
 	}
 
 	return 0;
@@ -81,7 +95,9 @@ ISR(TIMER0_COMPA_vect)
 	for(uint8_t i = 0; i < tx_queue_length; i++){
 		enqueue_task(tasks_low_priority, UART_write);
 	}
-
+	if(rx_queue_length > 0){
+		enqueue_task(tasks_high_priority, UART_interpret);
+	}
 	if(rx_overflow_flag){
 		enqueue_task(tasks_low_priority, UART_test_return_chars);
 		rx_overflow_flag = false;

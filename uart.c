@@ -1,5 +1,9 @@
 #include "uart.h"
 #include "queue.h"
+#include "pins.h"
+#include "led.h"
+#include "motor_states.h"
+#include "task_prioritizer.h"
 
 #include <stdlib.h>
 #include <avr/io.h>
@@ -99,8 +103,6 @@ bool UART_write()
 	return true;
 }
 
-
-
 bool UART_enqueue_urgent(unsigned char to_write)
 {
 	unsigned char *entry = (unsigned char *)malloc(sizeof(unsigned char));
@@ -161,7 +163,23 @@ void UART_test_return_chars()
 	UART_write_flush();
 }
 
-ISR(USART_RX_vect)
+void UART_interpret()
+{
+	unsigned char just_read = UART_read();
+	UART_enqueue(just_read);
+	switch(just_read){
+		case 'a':
+			f1();
+		case 'b':
+			f2();
+		case 'c':
+			f3();
+		default:
+			SET_LED_RED();
+	}
+}
+
+void UART_receive()
 {
 	if(rx_queue_length >= UART_QUEUE_MAX_LENGTH){
 		rx_overflow_flag = true;
@@ -179,5 +197,30 @@ ISR(USART_RX_vect)
 	queue_push_head(rx_queue, entry);
 
 	rx_queue_length++;
+}
+
+ISR(USART_RX_vect)
+{
+	//enqueue_task(tasks_high_priority, UART_receive);
+	
+	if(rx_queue_length >= UART_QUEUE_MAX_LENGTH){
+		rx_overflow_flag = true;
+		return;
+	}
+
+	unsigned char *entry = (unsigned char *)malloc(sizeof(unsigned char));
+
+	if(!entry){
+		rx_overflow_flag = true;
+		return;
+	}
+
+	*entry = UDR0;
+	queue_push_head(rx_queue, entry);
+
+	rx_queue_length++;
 	return;
+	
+
+
 }

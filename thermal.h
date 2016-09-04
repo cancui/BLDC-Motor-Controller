@@ -22,5 +22,6 @@ volatile uint8_t hottest_adc_reading;
 
 void init_thermal();
 void sample_gate_temperatures();
+void motor_thermal_stop(); //For ISR
 
 #endif
