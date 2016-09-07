@@ -8,6 +8,11 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
+
+
+#define LONG_MOTOR_TIMER_FOR_TEST
+
+
 void init_motor_driver()
 {
 	motor_stop(); //shuts off all motor gates
@@ -20,19 +25,23 @@ void init_motor_driver()
 	back_emf_zero_crossing_flag = false;
 	back_emf_PORTC_state = 0x00;
 
-	sum_of_time_between_states = new_simple_moving_average(MOTOR_STATE_CYCLES_PER_FULL_ROTATION * 3);
+	//sum_of_time_between_states = new_simple_moving_average(MOTOR_STATE_CYCLES_PER_FULL_ROTATION * 3);
 
 	//Set up PCINT1 interrupt for back-EMF sensing from analog comparator
 	PCICR |= (1 << PCIE1); //enable interrupts for PORTC (analog pins on Arduino)
 	PCMSK1 = (1 << PCINT13)|(1 << PCINT12)|(1 << PCINT11); //enable on A3-A5 specifically (PORTC bits 3-5)
 
-	/*
+	
 	//Motor state timer
 	TCCR1B |= (1 << WGM12); // Configure timer 1 for CTC mode
+#ifdef LONG_MOTOR_TIMER_FOR_TEST
+	OCR1A   = 155 * 400;
+#else
 	OCR1A   = 155; // Set CTC compare value to 100Hz at 16MHz AVR clock, with a prescaler of 1024
+#endif
 	TIMSK1 |= (1 << OCIE1A); // Enable CTC interrupt
 	TCCR1B |= ((1 << CS10) | (1 << CS12)); // Start timer at Fcpu/1024
-	*/
+	
 }
 
 void delay_100us(unsigned us) 
@@ -116,7 +125,7 @@ void change_motor_state()
 {
 	//cli();
 	//check if motor_off or triggered by high->low
-	//TODO: check if there's a more efficient way to do this
+	//TODO: check if there's a more efficient way to do this (state machine?)
 	uint8_t local_back_emf_PORTC_state = back_emf_PORTC_state;
 
 	if(motor_off || motor_emergency_stop_flag || (!(local_back_emf_PORTC_state & 0x08) && !(local_back_emf_PORTC_state & 0x10) && !(local_back_emf_PORTC_state & 0x20)) ) { 
@@ -189,14 +198,6 @@ void change_motor_state()
 	//sei();
 }
 
-
-uint16_t get_rotations_per_second()
-{
-	cli();
-	return 15625 / peek_simple_moving_sum(sum_of_time_between_states);	
-	sei();
-}
-
 void check_if_safe_to_restart()
 {
 	//Note that lower value means hotter
@@ -214,7 +215,7 @@ ISR(TIMER1_COMPA_vect)
 	if(!motor_off) {
 		motor_emergency_stop_flag = true;
 		motor_off = true;
-		set_flash_green();
+		set_flash_red();
 	}
 }
 

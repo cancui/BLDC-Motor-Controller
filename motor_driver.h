@@ -16,7 +16,7 @@ volatile bool motor_emergency_stop_flag;
 volatile bool back_emf_zero_crossing_flag;
 volatile uint8_t back_emf_PORTC_state;
 
-Simple_moving_average *sum_of_time_between_states;
+//Simple_moving_average *sum_of_time_between_states;
 
 void init_motor_driver();
 
@@ -32,6 +32,6 @@ void change_motor_state();
 
 void check_if_safe_to_restart(); //For the task prioritizer
 
-uint16_t get_rotations_per_second();
+//uint16_t get_rotations_per_second();
 
 #endif

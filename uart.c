@@ -3,6 +3,7 @@
 #include "pins.h"
 #include "led.h"
 #include "motor_states.h"
+#include "motor_driver.h"
 #include "task_prioritizer.h"
 
 #include <stdlib.h>
@@ -33,13 +34,13 @@ void init_UART(unsigned ubrr)
 	UCSR0B |= (1 << RXCIE0); //Enable receive complete interrupt
 }
 
-bool UART_enqueue(unsigned char entry_)
+bool UART_enqueue(char entry_)
 {
 	if(tx_queue_length >= UART_QUEUE_MAX_LENGTH) {
 		return false;
 	}
 
-	unsigned char *entry = (unsigned char *)malloc(sizeof(unsigned char));
+	char *entry = (char *)malloc(sizeof(char));
 
 	if(!entry){
 		return false;
@@ -52,7 +53,7 @@ bool UART_enqueue(unsigned char entry_)
 	return true;
 }
 
-bool UART_enqueue_string(unsigned char* str)
+bool UART_enqueue_string(char* str)
 {
 	if(strlen(str) + 1 > UART_QUEUE_MAX_LENGTH - tx_queue_length){
 		return false;
@@ -60,7 +61,7 @@ bool UART_enqueue_string(unsigned char* str)
 
 	while(*str != '\0'){
 		
-		unsigned char *entry = (unsigned char *)malloc(sizeof(unsigned char));
+		char *entry = (char *)malloc(sizeof(char));
 
 		if(!entry){
 			return false;
@@ -73,7 +74,7 @@ bool UART_enqueue_string(unsigned char* str)
 		str++;
 	}
 
-	unsigned char *entry_termination = (unsigned char *)malloc(sizeof(unsigned char));
+	char *entry_termination = (char *)malloc(sizeof(char));
 
 	if(!entry_termination){
 		return false;
@@ -93,7 +94,7 @@ bool UART_write()
 		return false;
 	}
 
-	unsigned char *to_write = (unsigned char *)queue_pop_tail(tx_queue);
+	char *to_write = (char *)queue_pop_tail(tx_queue);
 
 	UDR0 = *to_write;
 
@@ -103,9 +104,9 @@ bool UART_write()
 	return true;
 }
 
-bool UART_enqueue_urgent(unsigned char to_write)
+bool UART_enqueue_urgent(char to_write)
 {
-	unsigned char *entry = (unsigned char *)malloc(sizeof(unsigned char));
+	char *entry = (char *)malloc(sizeof(char));
 
 	if(!entry){
 		return false;
@@ -137,15 +138,15 @@ bool UART_write_flush()
 //TODO: Check for error flags
 //TODO: System for re-requesting information if errored
 //TODO: Funtion for interpreting commands
-unsigned char UART_read()
+char UART_read()
 {
 	if(rx_queue_length < 1){
 		return '\0';
 	}
 
-	unsigned char *just_read_ = (unsigned char *)queue_pop_tail(rx_queue);
+	char *just_read_ = (char *)queue_pop_tail(rx_queue);
 
-	unsigned char just_read = *just_read_;
+	char just_read = *just_read_;
 
 	free(just_read_);
 
@@ -165,17 +166,22 @@ void UART_test_return_chars()
 
 void UART_interpret()
 {
-	unsigned char just_read = UART_read();
-	UART_enqueue(just_read);
+	char just_read = UART_read();
+
+	//Switch statement needs return for some reason
 	switch(just_read){
 		case 'a':
-			f1();
+			startup_f1();
+			return;
 		case 'b':
-			f2();
+			TOG_LED_YELLOW();
+			return;
 		case 'c':
-			f3();
+			f2();
+			return;
 		default:
-			SET_LED_RED();
+			UART_enqueue(just_read);
+			return;
 	}
 }
 
@@ -186,7 +192,7 @@ void UART_receive()
 		return;
 	}
 
-	unsigned char *entry = (unsigned char *)malloc(sizeof(unsigned char));
+	char *entry = (char *)malloc(sizeof(char));
 
 	if(!entry){
 		rx_overflow_flag = true;
@@ -208,7 +214,7 @@ ISR(USART_RX_vect)
 		return;
 	}
 
-	unsigned char *entry = (unsigned char *)malloc(sizeof(unsigned char));
+	char *entry = (char *)malloc(sizeof(char));
 
 	if(!entry){
 		rx_overflow_flag = true;
@@ -220,7 +226,4 @@ ISR(USART_RX_vect)
 
 	rx_queue_length++;
 	return;
-	
-
-
 }

@@ -57,13 +57,9 @@ int main() {
 
 	initialize();
 
-	motor_off = false;
-
 	set_flash_green();
-	//set_flash_red();
-	//set_flash_yellow();
-	
-	startup_f1();
+
+	startup_f1(); //Just during testing
 
 
 	REPEAT {
@@ -74,22 +70,12 @@ int main() {
 		} else if(!do_task(tasks_high_priority)) {
 			do_task(tasks_low_priority);
 		}
-		/*
-		if(!do_task(tasks_high_priority)){
-			if(back_emf_zero_crossing_flag){
-				change_motor_state();
-				back_emf_zero_crossing_flag = false;
-			} else {
-				do_task(tasks_low_priority);
-			}
-		}*/
-
 	}
 
 	return 0;
 }
 
-//Periodically requests for thermal sampling and LED toggling (for flashing)
+//Schedules the following processes: thermal monitoring, UART send, UART receive, led flashing
 ISR(TIMER0_COMPA_vect)
 {
 	for(uint8_t i = 0; i < tx_queue_length; i++){

@@ -27,13 +27,13 @@ volatile bool rx_overflow_flag;
 
 void init_UART(unsigned ubrr);
 
-bool UART_enqueue(unsigned char entry_);
-bool UART_enqueue_urgent(unsigned char to_write);
-bool UART_enqueue_string(unsigned char* str);
+bool UART_enqueue(char entry_);
+bool UART_enqueue_urgent(char to_write);
+bool UART_enqueue_string(char* str);
 bool UART_write();
 bool UART_write_flush();
 
-unsigned char UART_read();
+char UART_read();
 void UART_interpret(); //For ISR
 void UART_receive(); //For ISR (doing the work in the actual ISR seems better)
 
