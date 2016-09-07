@@ -3,15 +3,13 @@
 #include "pins.h"
 #include "led.h"
 #include "thermal.h"
+#include "uart.h"
 #include "task_prioritizer.h"
 
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
-
-
 #define LONG_MOTOR_TIMER_FOR_TEST
-
 
 void init_motor_driver()
 {
@@ -31,11 +29,10 @@ void init_motor_driver()
 	PCICR |= (1 << PCIE1); //enable interrupts for PORTC (analog pins on Arduino)
 	PCMSK1 = (1 << PCINT13)|(1 << PCINT12)|(1 << PCINT11); //enable on A3-A5 specifically (PORTC bits 3-5)
 
-	
 	//Motor state timer
 	TCCR1B |= (1 << WGM12); // Configure timer 1 for CTC mode
 #ifdef LONG_MOTOR_TIMER_FOR_TEST
-	OCR1A   = 155 * 400;
+	OCR1A   = 155 * 200;
 #else
 	OCR1A   = 155; // Set CTC compare value to 100Hz at 16MHz AVR clock, with a prescaler of 1024
 #endif
@@ -73,85 +70,172 @@ void cycle_b(unsigned us100)
 	delay_100us(us100);
 }
 
-void simple1()
-{
-	for(unsigned i = 0; i < 100; i++) {
-		cycle_f(30);
-	}
-}
-
-const uint8_t cycle_delays1[5] = { 40,30,20,20,20 };
+const uint8_t cycle_delays1[5] = { 80,60,40,40,40 };
+const uint8_t cycle_delays2[5] = { 120,90,60,60,60 };
 
 bool startup_f1()
 {
-	if(motor_emergency_stop_flag) {
+	if(motor_emergency_stop_flag || (motor_off == false && motor_forwards == false)) {
 		return false;
 	}
 
-	//disable EMF interrupt
-	PCICR &= ~(1 << PCIE1); 
+	PCICR &= ~(1 << PCIE1); //disable EMF interrupts (disable all external interrupts on PORTC)
 
-	//disable timer interrupt
-	TIMSK1 &= ~(1 << OCIE1A); 
-
-	//clear_flash_green();
+	TIMSK1 &= ~(1 << OCIE1A); //disable motor CTC interrupt
 
 	motor_off = false;
 	motor_forwards = true;
 
-	//Startup routine (cli and sei will cause a long delay in periodic interrupts...)
 	f1();
-	_delay_ms(7);
+	_delay_ms(14);
 	f2();
-	_delay_ms(6);
+	_delay_ms(12);
 	f3();
-	_delay_ms(5);
+	_delay_ms(10);
 	uint8_t cycles = 0;
+	
 	while(!motor_emergency_stop_flag && cycles < 5) {
 		cycle_f(cycle_delays1[cycles++]);
 	}
 
-	// Enable CTC interrupt
-	TIMSK1 |= (1 << OCIE1A); 
+	TIMSK1 |= (1 << OCIE1A); //enable motor CTC interrupt
 	TCNT1 = 0; 
 
-	//enable EMF interrupt
-	PCICR |= (1 << PCIE1); //enable interrupts for PORTC (analog pins on Arduino)
+	PCICR |= (1 << PCIE1); //enable EMF interrupts
 
 	return true;
 }
 
+bool startup_b1()
+{
+	if(motor_emergency_stop_flag || (motor_off == false && motor_forwards == true)) {
+		return false;
+	}
+
+	PCICR &= ~(1 << PCIE1); //disable EMF interrupts (disable all external interrupts on PORTC)
+
+	TIMSK1 &= ~(1 << OCIE1A); //disable motor CTC interrupt
+
+	motor_off = false;
+	motor_forwards = false;
+
+	b1();
+	_delay_ms(14);
+	b2();
+	_delay_ms(12);
+	b3();
+	_delay_ms(10);
+	uint8_t cycles = 0;
+
+	while(!motor_emergency_stop_flag && cycles < 5) {
+		cycle_b(cycle_delays1[cycles++]);
+	}
+
+	TIMSK1 |= (1 << OCIE1A); //enable motor CTC interrupt
+	TCNT1 = 0; 
+
+	PCICR |= (1 << PCIE1); //enable EMF interrupts
+
+	return true;
+}
+
+bool startup_f2()
+{
+	if(motor_emergency_stop_flag || (motor_off == false && motor_forwards == false)) {
+		return false;
+	}
+
+	PCICR &= ~(1 << PCIE1); //disable EMF interrupts (disable all external interrupts on PORTC)
+
+	TIMSK1 &= ~(1 << OCIE1A); //disable motor CTC interrupt
+
+	motor_off = false;
+	motor_forwards = true;
+
+	f1();
+	_delay_ms(20);
+	f2();
+	_delay_ms(16);
+	f3();
+	_delay_ms(14);
+	uint8_t cycles = 0;
+	
+	while(!motor_emergency_stop_flag && cycles < 5) {
+		cycle_f(cycle_delays2[cycles++]);
+	}
+
+	TIMSK1 |= (1 << OCIE1A); //enable motor CTC interrupt
+	TCNT1 = 0; 
+
+	PCICR |= (1 << PCIE1); //enable EMF interrupts
+
+	return true;
+}
+
+bool startup_b2()
+{
+	if(motor_emergency_stop_flag || (motor_off == false && motor_forwards == true)) {
+		return false;
+	}
+
+	PCICR &= ~(1 << PCIE1); //disable EMF interrupts (disable all external interrupts on PORTC)
+
+	TIMSK1 &= ~(1 << OCIE1A); //disable motor CTC interrupt
+
+	motor_off = false;
+	motor_forwards = false;
+
+	b1();
+	_delay_ms(20);
+	b2();
+	_delay_ms(16);
+	b3();
+	_delay_ms(14);
+	uint8_t cycles = 0;
+
+	while(!motor_emergency_stop_flag && cycles < 5) {
+		cycle_b(cycle_delays2[cycles++]);
+	}
+
+	TIMSK1 |= (1 << OCIE1A); //enable motor CTC interrupt
+	TCNT1 = 0; 
+
+	PCICR |= (1 << PCIE1); //enable EMF interrupts
+
+	return true;
+}
+
+void force_motor_stop()
+{
+	f1();
+	_delay_ms(10);
+	b1();
+	_delay_ms(10);
+	motor_stop();
+
+	motor_off = true;
+
+	PCICR &= ~(1 << PCIE1); //disable EMF interrupt
+	TIMSK1 &= ~(1 << OCIE1A); //disable motor CTC interrupt	
+}
+
 void change_motor_state()
 {
-	//cli();
-	//check if motor_off or triggered by high->low
-	//TODO: check if there's a more efficient way to do this (state machine?)
+	//TODO: consider state machine implementation
 	uint8_t local_back_emf_PORTC_state = back_emf_PORTC_state;
 
 	if(motor_off || motor_emergency_stop_flag || (!(local_back_emf_PORTC_state & 0x08) && !(local_back_emf_PORTC_state & 0x10) && !(local_back_emf_PORTC_state & 0x20)) ) { 
-
-		//motor_stop();
-
-		TOG_LED_GREEN();
-		//toggle_led_green();
-		//_delay_ms(100);
-
-		PCIFR |= (1 << PCIF1); //clear the flag for this interrupt
-
-		//TODO: consider else instead of return
+		//PCIFR |= (1 << PCIF1); //clear the flag for this interrupt
 		return;
 	}
 
-	//cli();
 	//get_simple_moving_sum(sum_of_time_between_states, TCNT1);
-	//sei();
 	
 	if(motor_forwards) {
 		//if f1, check A5 (bit 5)
 		if(expected_motor_state == 1 && local_back_emf_PORTC_state & _BV(4)) {
 
 			f1(); 
-			//cli();
 			expected_motor_state = 2;
 		} else
 
@@ -159,7 +243,6 @@ void change_motor_state()
 		if(expected_motor_state == 2 && local_back_emf_PORTC_state & _BV(5)) {
 
 			f2();
-			//cli();
 			expected_motor_state = 3;
 		} else
 
@@ -167,7 +250,6 @@ void change_motor_state()
 		if(expected_motor_state == 3 && local_back_emf_PORTC_state & _BV(3)) {
 
 			f3();
-			//cli();
 			expected_motor_state = 1;
 		}
 	} else {
@@ -175,7 +257,6 @@ void change_motor_state()
 		if(expected_motor_state == 1 && local_back_emf_PORTC_state & _BV(3)) {
 
 			b1();
-			//cli();
 			expected_motor_state = 2;
 		} else
 
@@ -183,7 +264,6 @@ void change_motor_state()
 		if(expected_motor_state == 2 && local_back_emf_PORTC_state & _BV(5)) {
 
 			b2();
-			//cli();
 			expected_motor_state = 3;
 		} else
 
@@ -191,7 +271,6 @@ void change_motor_state()
 		if(expected_motor_state == 3 && local_back_emf_PORTC_state & _BV(4)) {
 
 			b3();
-			//cli();
 			expected_motor_state = 1;
 		}
 	}
@@ -200,7 +279,7 @@ void change_motor_state()
 
 void check_if_safe_to_restart()
 {
-	//Note that lower value means hotter
+	//Note that lower ADC reading means hotter
 	if(hottest_adc_reading >= high_adc_reading){
 		clear_flash_red();
 		CLR_LED_RED();
@@ -216,13 +295,13 @@ ISR(TIMER1_COMPA_vect)
 		motor_emergency_stop_flag = true;
 		motor_off = true;
 		set_flash_red();
+		UART_enqueue_string("!s"); //string indicating warning from motor stop due to state stagnation 
 	}
 }
 
 ISR (PCINT1_vect) 
 {
-	back_emf_PORTC_state = PINC;
-	back_emf_zero_crossing_flag = true;
-	//enqueue_task(tasks_high_priority, change_motor_state);
+	back_emf_PORTC_state = PINC; //save the state of the PORTC input pins
+	back_emf_zero_crossing_flag = true; //enqueue_task(tasks_high_priority, change_motor_state);
 	PCIFR |= (1 << PCIF1); //clear the flag for this interrupt
 }  

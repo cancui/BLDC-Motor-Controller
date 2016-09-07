@@ -170,14 +170,23 @@ void UART_interpret()
 
 	//Switch statement needs return for some reason
 	switch(just_read){
-		case 'a':
+		case 'f':
 			startup_f1();
 			return;
 		case 'b':
-			TOG_LED_YELLOW();
+			startup_b1();
 			return;
-		case 'c':
-			f2();
+		case 's':
+			force_motor_stop();
+			return;
+		case 'g':
+			TOG_LED_GREEN();
+			return;
+		case 'r':
+			TOG_LED_RED();
+			return;
+		case 'y':
+			TOG_LED_YELLOW();
 			return;
 		default:
 			UART_enqueue(just_read);

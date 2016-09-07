@@ -74,6 +74,7 @@ void sample_gate_temperatures(){
 	}
 }
 
+//The function scheduled by the hardware-triggered severe thermal warning interrupt (INT1_vect)
 void motor_thermal_stop()
 {
 	motor_stop();
@@ -81,19 +82,14 @@ void motor_thermal_stop()
 	motor_emergency_stop_flag = true;
 	back_emf_zero_crossing_flag = false;
 	SET_LED_RED();
+	UART_enqueue_string("!t"); //string indicating warning from motor stop due to state stagnation 
 }
 
+//Interrupt for hardware-triggered severe thermal warning
 ISR(INT1_vect)
 {
-	/*
-	motor_stop();
-	motor_off = true;
-	motor_emergency_stop_flag = true;
-	back_emf_zero_crossing_flag = false;
-	SET_LED_RED();
-	*/
-	enqueue_task(tasks_high_priority, motor_thermal_stop);
+	enqueue_task(tasks_high_priority, motor_thermal_stop); //schedules the motors to stop due to temperature (at high priority)
 
-	EIFR |= (1 << INTF1);
-	EIMSK &= ~(1 << INT1);
+	EIFR |= (1 << INTF1); //clears this interrupt's flag
+	EIMSK &= ~(1 << INT1); //turn off this interrupt
 }

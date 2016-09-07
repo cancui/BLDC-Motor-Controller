@@ -13,6 +13,7 @@
 #define REPEAT while(true) 
 
 //TODO: control messages, actual motor controller logic
+//TODO: establish atomic areas
 void initialize() 
 {
 	//Set up PORTB
@@ -56,11 +57,9 @@ void initialize()
 int main() {
 
 	initialize();
-
 	set_flash_green();
 
-	startup_f1(); //Just during testing
-
+	//startup_f1(); //Just during testing
 
 	REPEAT {
 		
@@ -81,11 +80,14 @@ ISR(TIMER0_COMPA_vect)
 	for(uint8_t i = 0; i < tx_queue_length; i++){
 		enqueue_task(tasks_low_priority, UART_write);
 	}
+
 	if(rx_queue_length > 0){
 		enqueue_task(tasks_high_priority, UART_interpret);
 	}
+
 	if(rx_overflow_flag){
-		enqueue_task(tasks_low_priority, UART_test_return_chars);
+		UART_enqueue_string("!o"); //string indicating warning from motor stop due to state stagnation 
+		//do something about overflow
 		rx_overflow_flag = false;
 	}
 	

@@ -24,9 +24,13 @@ void cycle_f(unsigned us100);
 
 void cycle_b(unsigned us100);
 
-void simple1();
-
 bool startup_f1();
+bool startup_b1();
+
+bool startup_f2();
+bool startup_b2();
+
+void force_motor_stop();
 
 void change_motor_state();
 
