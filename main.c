@@ -12,8 +12,6 @@
 
 #define REPEAT while(true) 
 
-//TODO: control messages, actual motor controller logic
-//TODO: establish atomic areas
 void initialize() 
 {
 	//Set up PORTB
@@ -48,8 +46,6 @@ void initialize()
 	TIMSK0 |= (1 << OCIE0A);  // for LED; Enable CTC interrupt (TIMER0_COMPA_vect)
 	TCCR0B |= ((1 << CS02) | (1 << CS00)); // Start timer 0 at Fcpu/1024
 	//The value of this timer is stored in TCNT0
-
-	//TODO: complete motor state timer implementation
 
 	sei();	//global enable interrupts
 }
